@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 
 /**
  *
- * @author lucas
+ * @author Joao Victor
  */
 public class TelaPrincipal extends javax.swing.JFrame {
     /**
@@ -76,6 +76,8 @@ public class TelaPrincipal extends javax.swing.JFrame {
         jMenuItem4 = new javax.swing.JMenuItem();
         jMenuItem10 = new javax.swing.JMenuItem();
         mnuSair = new javax.swing.JMenuItem();
+        jMenu6 = new javax.swing.JMenu();
+        MenuCliente = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         jMenuItem7 = new javax.swing.JMenuItem();
         jMenuItem8 = new javax.swing.JMenuItem();
@@ -191,6 +193,18 @@ public class TelaPrincipal extends javax.swing.JFrame {
         jMenu1.add(mnuSair);
 
         jMenuBar1.add(jMenu1);
+
+        jMenu6.setText("Cliente");
+
+        MenuCliente.setText("Clientes");
+        MenuCliente.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                MenuClienteActionPerformed(evt);
+            }
+        });
+        jMenu6.add(MenuCliente);
+
+        jMenuBar1.add(jMenu6);
 
         jMenu2.setText("Pedidos");
 
@@ -395,12 +409,19 @@ public class TelaPrincipal extends javax.swing.JFrame {
         ajudar.setVisible(true);
     }//GEN-LAST:event_jMenuItem11ActionPerformed
 
+    private void MenuClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MenuClienteActionPerformed
+        Clientes cliente = new Clientes();
+        cliente.setVisible(true);
+        desktop.add(cliente);
+    }//GEN-LAST:event_MenuClienteActionPerformed
+
     /**
      * @param args the command line arguments
      */
     
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenuItem MenuCliente;
     private javax.swing.JLabel cargoLabel;
     private javax.swing.JLabel dataLabel;
     private javax.swing.JDesktopPane desktop;
@@ -413,6 +434,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenu jMenu4;
     private javax.swing.JMenu jMenu5;
+    private javax.swing.JMenu jMenu6;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem10;

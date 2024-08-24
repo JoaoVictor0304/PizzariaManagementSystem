@@ -3,10 +3,11 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Joao%20Victor/Desktop/PizzeriaManagementSystem-main/PizzariaManagementSystem/src/telas/TelaPrincipal.java</file>
-            <file>file:/C:/Users/Joao%20Victor/Desktop/PizzeriaManagementSystem-main/PizzariaManagementSystem/src/telas/Ajuda.java</file>
-            <file>file:/C:/Users/Joao%20Victor/Desktop/PizzeriaManagementSystem-main/PizzariaManagementSystem/src/telas/Login.java</file>
-            <file>file:/C:/Users/Joao%20Victor/Desktop/PizzeriaManagementSystem-main/PizzariaManagementSystem/src/telas/PesquisaUsuarios.java</file>
+            <file>file:/C:/Users/Joao%20Victor/Documents/MeusProjetos/PizzariaManagementSystem/PizzariaManagementSystem/src/conexaodatabase/ModuloConexao.java</file>
+            <file>file:/C:/Users/Joao%20Victor/Documents/MeusProjetos/PizzariaManagementSystem/PizzariaManagementSystem/src/telas/IncluirEstoque.java</file>
+            <file>file:/C:/Users/Joao%20Victor/Documents/MeusProjetos/PizzariaManagementSystem/PizzariaManagementSystem/src/telas/DeletarUsuarios.java</file>
+            <file>file:/C:/Users/Joao%20Victor/Documents/MeusProjetos/PizzariaManagementSystem/PizzariaManagementSystem/src/telas/TelaPrincipal.java</file>
+            <file>file:/C:/Users/Joao%20Victor/Documents/MeusProjetos/PizzariaManagementSystem/PizzariaManagementSystem/src/telas/Login.java</file>
         </group>
     </open-files>
 </project-private>
