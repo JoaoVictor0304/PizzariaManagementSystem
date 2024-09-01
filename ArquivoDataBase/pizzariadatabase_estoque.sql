@@ -27,7 +27,7 @@ CREATE TABLE `estoque` (
   `Quantidade` int NOT NULL,
   `Nome` varchar(45) NOT NULL,
   PRIMARY KEY (`idEstoque`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -36,7 +36,7 @@ CREATE TABLE `estoque` (
 
 LOCK TABLES `estoque` WRITE;
 /*!40000 ALTER TABLE `estoque` DISABLE KEYS */;
-INSERT INTO `estoque` VALUES (1,85,'Massas'),(2,87,'Molho-Tomate'),(3,96,'Calabresas'),(4,99,'Queijo'),(5,99,'Tomate-fatia'),(6,97,'Frango'),(7,97,'Catupiry'),(8,99,'Nutella'),(9,99,'brocolis'),(10,99,'Mussarela'),(11,99,'Pepperoni');
+INSERT INTO `estoque` VALUES (1,100,'Massa'),(2,100,'Molho-Tomate'),(3,100,'Calabresa'),(4,100,'Queijo'),(5,100,'Tomate Fatia'),(6,100,'Frango'),(7,100,'Catupiry'),(8,100,'Nutella'),(9,100,'Brócolis'),(10,100,'Mussarela'),(11,100,'Pepperoni'),(12,100,'Palmito'),(14,100,'Bacon');
 /*!40000 ALTER TABLE `estoque` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -49,4 +49,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-09-01 11:06:05
+-- Dump completed on 2024-09-01 13:59:22
