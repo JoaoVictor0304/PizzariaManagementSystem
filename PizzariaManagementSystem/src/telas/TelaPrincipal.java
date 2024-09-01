@@ -155,6 +155,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         });
         jMenu1.add(menuUser);
 
+        jMenuItem2.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_H, java.awt.event.InputEvent.ALT_DOWN_MASK));
         jMenuItem2.setText("Horários");
         jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -245,6 +246,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
         jMenu6.setText("Opções");
 
+        menuTrocUser.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_T, java.awt.event.InputEvent.ALT_DOWN_MASK));
         menuTrocUser.setText("Trocar Usuario");
         menuTrocUser.setToolTipText("");
         menuTrocUser.addActionListener(new java.awt.event.ActionListener() {

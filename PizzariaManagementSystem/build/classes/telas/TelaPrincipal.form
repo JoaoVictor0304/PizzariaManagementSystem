@@ -40,6 +40,9 @@
             </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="jMenuItem2">
               <Properties>
+                <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+                  <KeyStroke key="Alt+H"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="Hor&#xe1;rios"/>
               </Properties>
               <Events>
@@ -146,6 +149,9 @@
           <SubComponents>
             <MenuItem class="javax.swing.JMenuItem" name="menuTrocUser">
               <Properties>
+                <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+                  <KeyStroke key="Alt+T"/>
+                </Property>
                 <Property name="text" type="java.lang.String" value="Trocar Usuario"/>
                 <Property name="toolTipText" type="java.lang.String" value=""/>
               </Properties>
