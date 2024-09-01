@@ -79,7 +79,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         jMenu5 = new javax.swing.JMenu();
         menuAjuda = new javax.swing.JMenuItem();
         jMenu6 = new javax.swing.JMenu();
-        menuTrocUser = new javax.swing.JMenuItem();
+        menuTrocUsuario = new javax.swing.JMenuItem();
         menuSair = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -230,15 +230,14 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
         jMenu6.setText("Opções");
 
-        menuTrocUser.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_T, java.awt.event.InputEvent.ALT_DOWN_MASK));
-        menuTrocUser.setText("Trocar Usuario");
-        menuTrocUser.setToolTipText("");
-        menuTrocUser.addActionListener(new java.awt.event.ActionListener() {
+        menuTrocUsuario.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_U, java.awt.event.InputEvent.ALT_DOWN_MASK));
+        menuTrocUsuario.setText("Trocar usuário");
+        menuTrocUsuario.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                menuTrocUserActionPerformed(evt);
+                menuTrocUsuarioActionPerformed(evt);
             }
         });
-        jMenu6.add(menuTrocUser);
+        jMenu6.add(menuTrocUsuario);
 
         menuSair.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F4, java.awt.event.InputEvent.ALT_DOWN_MASK));
         menuSair.setText("Sair");
@@ -326,12 +325,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
         hora.setVisible(true);
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
-    private void menuTrocUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuTrocUserActionPerformed
-        Login newlogin = new Login();
-        this.dispose();
-        newlogin.setVisible(true);
-    }//GEN-LAST:event_menuTrocUserActionPerformed
-
     private void menuSairActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuSairActionPerformed
         int sair = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja sair?", "Atenção", JOptionPane.YES_NO_OPTION);
         if (sair == JOptionPane.YES_OPTION) {
@@ -364,6 +357,12 @@ public class TelaPrincipal extends javax.swing.JFrame {
         estoque.setVisible(true);
     }//GEN-LAST:event_menuEstoqueActionPerformed
 
+    private void menuTrocUsuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuTrocUsuarioActionPerformed
+        Login newlogin = new Login();
+        this.dispose();
+        newlogin.setVisible(true);
+    }//GEN-LAST:event_menuTrocUsuarioActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -389,7 +388,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
     private javax.swing.JMenuItem menuCliente;
     public static javax.swing.JMenuItem menuEstoque;
     private javax.swing.JMenuItem menuSair;
-    private javax.swing.JMenuItem menuTrocUser;
+    private javax.swing.JMenuItem menuTrocUsuario;
     public static javax.swing.JMenuItem menuUser;
     public static javax.swing.JLabel usuLabel;
     // End of variables declaration//GEN-END:variables
