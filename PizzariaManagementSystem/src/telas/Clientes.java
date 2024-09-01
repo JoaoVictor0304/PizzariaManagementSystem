@@ -56,7 +56,7 @@ public class Clientes extends javax.swing.JInternalFrame {
 
     //método para pesquisar clientes pelo nome com filtro
     private void pesquisarCliente() {
-        String sql = "select * from cliente where nomecli like ? or fonecli like ?";
+        String sql = "select idcliente as id, nomecli as nome, endcli as endereço, fonecli as fone, emailcli as email from cliente where nomecli like ? or fonecli like ?";
         try {
             pst = conexao.prepareStatement(sql);
             //passando o conteúdo da caixa de pesquisa para o ?
@@ -131,6 +131,7 @@ public class Clientes extends javax.swing.JInternalFrame {
                 }
 
             } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, e);
             }
         }
 

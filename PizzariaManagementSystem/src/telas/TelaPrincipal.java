@@ -68,6 +68,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         jMenu1 = new javax.swing.JMenu();
         menuCliente = new javax.swing.JMenuItem();
         menuUser = new javax.swing.JMenuItem();
+        menuEstoque = new javax.swing.JMenuItem();
         jMenuItem2 = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         jMenuItem7 = new javax.swing.JMenuItem();
@@ -75,9 +76,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
         MenuReceitas = new javax.swing.JMenu();
         jCheckBoxMenuItem1 = new javax.swing.JCheckBoxMenuItem();
         jMenuItem6 = new javax.swing.JMenuItem();
-        jMenu4 = new javax.swing.JMenu();
-        jMenuItem5 = new javax.swing.JMenuItem();
-        incluirEstoque = new javax.swing.JMenuItem();
         jMenu5 = new javax.swing.JMenu();
         menuAjuda = new javax.swing.JMenuItem();
         jMenu6 = new javax.swing.JMenu();
@@ -155,6 +153,15 @@ public class TelaPrincipal extends javax.swing.JFrame {
         });
         jMenu1.add(menuUser);
 
+        menuEstoque.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_E, java.awt.event.InputEvent.ALT_DOWN_MASK));
+        menuEstoque.setText("Estoque");
+        menuEstoque.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuEstoqueActionPerformed(evt);
+            }
+        });
+        jMenu1.add(menuEstoque);
+
         jMenuItem2.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_H, java.awt.event.InputEvent.ALT_DOWN_MASK));
         jMenuItem2.setText("Horários");
         jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
@@ -206,31 +213,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
         MenuReceitas.add(jMenuItem6);
 
         jMenuBar1.add(MenuReceitas);
-
-        jMenu4.setText("Estoque");
-        jMenu4.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenu4ActionPerformed(evt);
-            }
-        });
-
-        jMenuItem5.setText("Mostrar");
-        jMenuItem5.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem5ActionPerformed(evt);
-            }
-        });
-        jMenu4.add(jMenuItem5);
-
-        incluirEstoque.setText("Incluir Estoque");
-        incluirEstoque.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                incluirEstoqueActionPerformed(evt);
-            }
-        });
-        jMenu4.add(incluirEstoque);
-
-        jMenuBar1.add(jMenu4);
 
         jMenu5.setText("Ajuda");
 
@@ -308,16 +290,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jMenu4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenu4ActionPerformed
-
-    }//GEN-LAST:event_jMenu4ActionPerformed
-
-    private void jMenuItem5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem5ActionPerformed
-        Estoque estoque = new Estoque();
-        desktop.add(estoque);
-        estoque.setVisible(true);
-    }//GEN-LAST:event_jMenuItem5ActionPerformed
-
     private void jCheckBoxMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxMenuItem1ActionPerformed
         Receitas receitas = new Receitas();
         desktop.add(receitas);
@@ -366,12 +338,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
     }//GEN-LAST:event_menuSairActionPerformed
 
-    private void incluirEstoqueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_incluirEstoqueActionPerformed
-        IncluirEstoque inserirEst = new IncluirEstoque();
-        desktop.add(inserirEst);
-        inserirEst.setVisible(true);
-    }//GEN-LAST:event_incluirEstoqueActionPerformed
-
     private void menuClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuClienteActionPerformed
         Clientes cliente = new Clientes();
         cliente.setVisible(true);
@@ -390,6 +356,12 @@ public class TelaPrincipal extends javax.swing.JFrame {
         ajudar.setVisible(true);
     }//GEN-LAST:event_menuAjudaActionPerformed
 
+    private void menuEstoqueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuEstoqueActionPerformed
+        TelaEstoque estoque = new TelaEstoque();
+        desktop.add(estoque);
+        estoque.setVisible(true);
+    }//GEN-LAST:event_menuEstoqueActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -399,23 +371,21 @@ public class TelaPrincipal extends javax.swing.JFrame {
     public static javax.swing.JLabel cargoLabel;
     private javax.swing.JLabel dataLabel;
     private javax.swing.JDesktopPane desktop;
-    private javax.swing.JMenuItem incluirEstoque;
     private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItem1;
     private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
-    private javax.swing.JMenu jMenu4;
     private javax.swing.JMenu jMenu5;
     private javax.swing.JMenu jMenu6;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem2;
-    private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JMenuItem jMenuItem6;
     private javax.swing.JMenuItem jMenuItem7;
     private javax.swing.JMenuItem jMenuItem8;
     private javax.swing.JMenuItem menuAjuda;
     private javax.swing.JMenuItem menuCliente;
+    private javax.swing.JMenuItem menuEstoque;
     private javax.swing.JMenuItem menuSair;
     private javax.swing.JMenuItem menuTrocUser;
     public static javax.swing.JMenuItem menuUser;
