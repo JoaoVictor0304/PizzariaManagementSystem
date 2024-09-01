@@ -216,6 +216,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
         jMenu5.setText("Ajuda");
 
+        menuAjuda.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.ALT_DOWN_MASK));
         menuAjuda.setText("Ajuda");
         menuAjuda.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
