@@ -46,6 +46,7 @@ public class Login extends javax.swing.JFrame {
                     principal.setVisible(true);
                     TelaPrincipal.menuUser.setEnabled(true);
                     TelaPrincipal.MenuReceitas.setEnabled(true);
+                    TelaPrincipal.menuEstoque.setEnabled(true);
                     TelaPrincipal.usuLabel.setText(rs.getString(2));
                     TelaPrincipal.cargoLabel.setText(rs.getString(5));
                     this.dispose();

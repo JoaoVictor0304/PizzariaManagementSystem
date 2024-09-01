@@ -56,7 +56,7 @@ public class Clientes extends javax.swing.JInternalFrame {
 
     //método para pesquisar clientes pelo nome com filtro
     private void pesquisarCliente() {
-        String sql = "select * from cliente where nomecli like ? or fonecli like ?";
+        String sql = "select idcliente as id, nomecli as nome, endcli as endereço, fonecli as fone, emailcli as email from cliente where nomecli like ? or fonecli like ?";
         try {
             pst = conexao.prepareStatement(sql);
             //passando o conteúdo da caixa de pesquisa para o ?
@@ -131,6 +131,7 @@ public class Clientes extends javax.swing.JInternalFrame {
                 }
 
             } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, e);
             }
         }
 
@@ -202,6 +203,8 @@ public class Clientes extends javax.swing.JInternalFrame {
         jLabel5.setText("e-mail");
 
         btnAdicionar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icones/add.png"))); // NOI18N
+        btnAdicionar.setToolTipText("Adicionar");
+        btnAdicionar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnAdicionar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnAdicionarActionPerformed(evt);
@@ -209,6 +212,8 @@ public class Clientes extends javax.swing.JInternalFrame {
         });
 
         btnAlterar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icones/edit.png"))); // NOI18N
+        btnAlterar.setToolTipText("Editar");
+        btnAlterar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnAlterar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnAlterarActionPerformed(evt);
@@ -216,6 +221,8 @@ public class Clientes extends javax.swing.JInternalFrame {
         });
 
         btnRemover.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icones/trash.png"))); // NOI18N
+        btnRemover.setToolTipText("Remover");
+        btnRemover.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnRemover.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnRemoverActionPerformed(evt);
