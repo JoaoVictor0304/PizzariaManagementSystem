@@ -155,6 +155,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
         menuEstoque.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_E, java.awt.event.InputEvent.ALT_DOWN_MASK));
         menuEstoque.setText("Estoque");
+        menuEstoque.setEnabled(false);
         menuEstoque.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuEstoqueActionPerformed(evt);
@@ -386,7 +387,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem8;
     private javax.swing.JMenuItem menuAjuda;
     private javax.swing.JMenuItem menuCliente;
-    private javax.swing.JMenuItem menuEstoque;
+    public static javax.swing.JMenuItem menuEstoque;
     private javax.swing.JMenuItem menuSair;
     private javax.swing.JMenuItem menuTrocUser;
     public static javax.swing.JMenuItem menuUser;
