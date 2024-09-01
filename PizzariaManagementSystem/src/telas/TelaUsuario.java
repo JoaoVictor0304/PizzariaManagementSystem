@@ -49,24 +49,35 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
 
     private void adicionar() {
         String sql = "insert into usuarios(idUsuarios, usuario, login, senha, perfil) values (?, ?, ?, ?, ?)";
+        String sqlLogin = "select * from usuarios where login = ?";
         try {
-            ps = conexao.prepareStatement(sql);
-            ps.setString(1, txtUsuId.getText());
-            ps.setString(2, txtUsuNome.getText());
-            ps.setString(3, txtUsuLogin.getText());
-            ps.setString(4, txtUsuSenha.getText());
-            ps.setString(5, cboUsuPerfil.getSelectedItem().toString());
-            //validação dos campos obrigatórios
-            if ((txtUsuId.getText().isEmpty()) || (txtUsuNome.getText().isEmpty()) || (txtUsuLogin.getText().isEmpty()) || (txtUsuSenha.getText()).isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Preencha todos os campos");
-            } else {
 
-                //atualiza a tabela usuarios com os dados do formulário
-                int adicionado = ps.executeUpdate();
-                if (adicionado > 0) {
-                    JOptionPane.showMessageDialog(null, "Usuário adicionado com sucesso");
-                    txtUsuId.setText(null);
-                    limpar();
+            ps = conexao.prepareStatement(sqlLogin);
+            ps.setString(1, txtUsuLogin.getText());
+            rs = ps.executeQuery();
+
+            if (rs.next()) {
+                JOptionPane.showMessageDialog(null, "Login já existente, por favor escolha outro.");
+            } else {
+                ps = conexao.prepareStatement(sql);
+                ps.setString(1, txtUsuId.getText());
+                ps.setString(2, txtUsuNome.getText());
+                ps.setString(3, txtUsuLogin.getText());
+                ps.setString(4, txtUsuSenha.getText());
+                ps.setString(5, cboUsuPerfil.getSelectedItem().toString());
+
+                //validação dos campos obrigatórios
+                if ((txtUsuId.getText().isEmpty()) || (txtUsuNome.getText().isEmpty()) || (txtUsuLogin.getText().isEmpty()) || (txtUsuSenha.getText()).isEmpty()) {
+                    JOptionPane.showMessageDialog(null, "Preencha todos os campos");
+                } else {
+
+                    //atualiza a tabela usuarios com os dados do formulário
+                    int adicionado = ps.executeUpdate();
+                    if (adicionado > 0) {
+                        JOptionPane.showMessageDialog(null, "Usuário adicionado com sucesso");
+                        txtUsuId.setText(null);
+                        limpar();
+                    }
                 }
             }
 
@@ -271,10 +282,9 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
                     .addComponent(cboUsuPerfil, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(20, 20, 20)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(btnUsuCreate)
-                        .addComponent(btnUsuRead)
-                        .addComponent(btnUsuUpdate))
+                    .addComponent(btnUsuRead)
+                    .addComponent(btnUsuUpdate)
+                    .addComponent(btnUsuCreate)
                     .addComponent(btnUsuDelete, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );

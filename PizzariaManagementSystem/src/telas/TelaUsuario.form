@@ -95,11 +95,9 @@
               </Group>
               <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="103" groupAlignment="3" attributes="0">
-                      <Component id="btnUsuCreate" linkSize="2" alignment="3" min="-2" max="-2" attributes="0"/>
-                      <Component id="btnUsuRead" linkSize="2" alignment="0" min="-2" max="-2" attributes="0"/>
-                      <Component id="btnUsuUpdate" linkSize="2" alignment="0" min="-2" max="-2" attributes="0"/>
-                  </Group>
+                  <Component id="btnUsuRead" linkSize="2" alignment="0" min="-2" max="-2" attributes="0"/>
+                  <Component id="btnUsuUpdate" linkSize="2" alignment="0" min="-2" max="-2" attributes="0"/>
+                  <Component id="btnUsuCreate" linkSize="2" min="-2" max="-2" attributes="0"/>
                   <Component id="btnUsuDelete" linkSize="2" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace min="45" max="32767" attributes="0"/>

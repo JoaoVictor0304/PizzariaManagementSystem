@@ -370,12 +370,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
         inserirEst.setVisible(true);
     }//GEN-LAST:event_incluirEstoqueActionPerformed
 
-    private void menuAjudaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuAjudaActionPerformed
-        Ajuda ajudar = new Ajuda();
-        desktop.add(ajudar);
-        ajudar.setVisible(true);
-    }//GEN-LAST:event_menuAjudaActionPerformed
-
     private void menuClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuClienteActionPerformed
         Clientes cliente = new Clientes();
         cliente.setVisible(true);
@@ -387,6 +381,12 @@ public class TelaPrincipal extends javax.swing.JFrame {
         usuario.setVisible(true);
         desktop.add(usuario);
     }//GEN-LAST:event_menuUserActionPerformed
+
+    private void menuAjudaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuAjudaActionPerformed
+        Ajuda ajudar = new Ajuda();
+        desktop.add(ajudar);
+        ajudar.setVisible(true);
+    }//GEN-LAST:event_menuAjudaActionPerformed
 
     /**
      * @param args the command line arguments
