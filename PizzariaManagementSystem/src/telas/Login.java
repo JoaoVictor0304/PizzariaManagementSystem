@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package telas;
+
 import java.sql.*;
 import conexaodatabase.ModuloConexao;
 import java.util.TimerTask;
@@ -10,47 +11,60 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+
 /**
  *
  * @author Joao Victor
  */
 
-public class Login extends javax.swing.JFrame  {
-    
+public class Login extends javax.swing.JFrame {
+
     Connection conexao;
     PreparedStatement ps;
     ResultSet rs;
 
-    
     public Login() {
         initComponents();
         conexao = ModuloConexao.connector();
-        
+
     }
-    
-    public void Logar(){
-        String sql = "select * from usuarios where Nome =? and Senha=?";
-        
+
+    public void Logar() {
+        String sql = "select * from usuarios where login =? and senha=?";
+
         try {
             ps = conexao.prepareStatement(sql);
             ps.setString(1, loginUsuario.getText());
-            ps.setString(2, loginSenha.getText());
+            String captura = new String(loginSenha.getPassword());
+            ps.setString(2, captura);
             rs = ps.executeQuery();
-            if(rs.next()){
-                TelaPrincipal principal = new TelaPrincipal(rs.getString(2),rs.getString(4));
-                conexao.close();
-                principal.setVisible(true);
-                this.setVisible(false);
-                conexao.close();
-            }
-            else{
+            if (rs.next()) {
+                String perfil = rs.getString(5);
+
+                if (perfil.equals("admin")) {
+                    TelaPrincipal principal = new TelaPrincipal(rs.getString(2), rs.getString(5));
+                    principal.setVisible(true);
+                    TelaPrincipal.menuUser.setEnabled(true);
+                    TelaPrincipal.MenuReceitas.setEnabled(true);
+                    TelaPrincipal.usuLabel.setText(rs.getString(2));
+                    TelaPrincipal.cargoLabel.setText(rs.getString(5));
+                    this.dispose();
+                    conexao.close();
+                } else {
+                    TelaPrincipal principal = new TelaPrincipal(rs.getString(2), rs.getString(5));
+                    principal.setVisible(true);
+                    TelaPrincipal.usuLabel.setText(rs.getString(2));
+                    TelaPrincipal.cargoLabel.setText(rs.getString(5));
+                    this.dispose();
+                }
+            } else {
                 JOptionPane.showMessageDialog(null, "Usuario e/ou Senha incorretos");
                 loginUsuario.setText("");
                 loginSenha.setText("");
                 loginUsuario.requestFocusInWindow();
                 return;
             }
-            
+
         } catch (SQLException e) {
             System.out.println(e);
         }
@@ -65,20 +79,16 @@ public class Login extends javax.swing.JFrame  {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         loginUsuario = new javax.swing.JTextField();
         loginSenha = new javax.swing.JPasswordField();
         btnLogar = new javax.swing.JButton();
-        btnSair = new javax.swing.JButton();
         jLabel5 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Login");
-
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        jLabel1.setText("Login");
+        setResizable(false);
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel2.setText("Usuario:");
@@ -93,18 +103,10 @@ public class Login extends javax.swing.JFrame  {
         });
 
         btnLogar.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        btnLogar.setText("Entrar");
+        btnLogar.setText("Login");
         btnLogar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnLogarActionPerformed(evt);
-            }
-        });
-
-        btnSair.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        btnSair.setText("Sair");
-        btnSair.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnSairActionPerformed(evt);
             }
         });
 
@@ -116,30 +118,24 @@ public class Login extends javax.swing.JFrame  {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(btnLogar)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnSair))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel2)
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jLabel3))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(loginUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 336, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(loginSenha, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 336, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(loginSenha, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 336, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(btnLogar))
                 .addGap(18, 18, 18)
                 .addComponent(jLabel5)
-                .addContainerGap(33, Short.MAX_VALUE))
+                .addContainerGap(21, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel1)
-                .addGap(27, 27, 27)
+                .addGap(22, 22, 22)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -153,10 +149,8 @@ public class Login extends javax.swing.JFrame  {
                         .addComponent(jLabel5)
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnLogar)
-                    .addComponent(btnSair))
-                .addGap(24, 24, 24))
+                .addComponent(btnLogar)
+                .addGap(20, 20, 20))
         );
 
         pack();
@@ -166,10 +160,6 @@ public class Login extends javax.swing.JFrame  {
     private void btnLogarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogarActionPerformed
         Logar();
     }//GEN-LAST:event_btnLogarActionPerformed
-
-    private void btnSairActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSairActionPerformed
-        this.dispose();
-    }//GEN-LAST:event_btnSairActionPerformed
 
     private void loginUsuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginUsuarioActionPerformed
         // TODO add your handling code here:
@@ -213,8 +203,6 @@ public class Login extends javax.swing.JFrame  {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnLogar;
-    private javax.swing.JButton btnSair;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel5;

@@ -11,7 +11,7 @@ import javax.swing.JOptionPane;
  */
 public class ModuloConexao {
     public static Connection connector(){
-        Connection conexao ;
+        Connection conexao = null;
         String Driver = "com.mysql.cj.jdbc.Driver";
         String url = "jdbc:mysql://localhost:3306/pizzariadatabase";
         String user = "root";

@@ -176,6 +176,9 @@ public class Clientes extends javax.swing.JInternalFrame {
         txtCliId = new javax.swing.JTextField();
 
         setClosable(true);
+        setIconifiable(true);
+        setMaximizable(true);
+        setTitle("Clientes");
 
         txtCliPesquisar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
