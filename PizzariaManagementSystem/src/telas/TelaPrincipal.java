@@ -73,6 +73,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         jMenu2 = new javax.swing.JMenu();
         jMenuItem7 = new javax.swing.JMenuItem();
         jMenuItem8 = new javax.swing.JMenuItem();
+        jMenuItem1 = new javax.swing.JMenuItem();
         menuReceitas = new javax.swing.JMenu();
         menuCriarPizza = new javax.swing.JMenuItem();
         jMenu5 = new javax.swing.JMenu();
@@ -190,6 +191,14 @@ public class TelaPrincipal extends javax.swing.JFrame {
             }
         });
         jMenu2.add(jMenuItem8);
+
+        jMenuItem1.setText("Pedido");
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(jMenuItem1);
 
         jMenuBar1.add(jMenu2);
 
@@ -347,6 +356,13 @@ public class TelaPrincipal extends javax.swing.JFrame {
         criar.setVisible(true);
     }//GEN-LAST:event_menuCriarPizzaActionPerformed
 
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+        // Chama a tela pedido
+        TelaPedido pedido = new TelaPedido();
+        desktop.add(pedido);
+        pedido.setVisible(true);
+    }//GEN-LAST:event_jMenuItem1ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -362,6 +378,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu5;
     private javax.swing.JMenu jMenu6;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItem7;
     private javax.swing.JMenuItem jMenuItem8;

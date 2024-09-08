@@ -30,6 +30,7 @@ public class TelaEstoque extends javax.swing.JInternalFrame {
         conexao = ModuloConexao.connector();
     }
 
+    //método para adicionar um ingrediente
     private void adicionarIngrediente() {
         String sql = "insert into ingrediente (nome, unidadeMedida) values (?, ?)";
         try {
@@ -43,7 +44,7 @@ public class TelaEstoque extends javax.swing.JInternalFrame {
                 int adicionado = pst.executeUpdate();
 
                 if (adicionado > 0) {
-                    JOptionPane.showMessageDialog(null, "Ingrediente Adicionado");
+                    JOptionPane.showMessageDialog(null, "Ingrediente adicionado");
                     //limpar();
                 }
             }
@@ -52,7 +53,7 @@ public class TelaEstoque extends javax.swing.JInternalFrame {
         }
     }
 
-    //método para pesquisar produtos pelo nome com filtro
+    //método para pesquisar ingredientes pelo nome com filtro
     private void pesquisarIngrediente() {
         String sql = "select idIngrediente as id, nome as Nome, unidadeMedida as UnidadeMedida from ingrediente where nome like ?";
         try {
@@ -74,6 +75,8 @@ public class TelaEstoque extends javax.swing.JInternalFrame {
     public void setarCamposIngrediente() {
         int setar = tblIngrediente.getSelectedRow();
         txtIngrediente.setText(tblIngrediente.getModel().getValueAt(setar, 0).toString());
+        //a linha abaixo seta o campo idIngrediente para o campo de id do formulário de estoque
+        txtIdIngrediente.setText(tblIngrediente.getModel().getValueAt(setar, 0).toString());
         txtNomeIngrediente.setText(tblIngrediente.getModel().getValueAt(setar, 1).toString());
         cboUnIngrediente.setSelectedItem(tblIngrediente.getModel().getValueAt(setar, 2).toString());
 
@@ -81,7 +84,7 @@ public class TelaEstoque extends javax.swing.JInternalFrame {
         btnAddIngrediente.setEnabled(false);
     }
 
-    //métodos para alterar dados do estoque
+    //métodos para alterar dados do ingrediente
     private void alterarIngrediente() {
         String sql = "update ingrediente set nome = ?, unidadeMedida = ? where idIngrediente = ?";
         try {
@@ -133,8 +136,85 @@ public class TelaEstoque extends javax.swing.JInternalFrame {
         }
 
     }
-    
-    
+
+    //método para pesquisar no estoque junto com o ingrediente
+    private void pesquisarEstoque() {
+        String sql = "SELECT i.idIngrediente, i.nome AS Ingrediente, e.quantidade as Quantidade, i.unidadeMedida as UnidadeMedida FROM estoque e INNER JOIN ingrediente i ON e.idIngrediente = i.idIngrediente WHERE i.nome like ?";
+        try {
+            pst = conexao.prepareStatement(sql);
+            //passando o conteúdo da caixa de pesquisa para o ?
+            //atenção ao "%" - continuação da String sql
+            pst.setString(1, txtPesqEstoque.getText() + "%");
+
+            rs = pst.executeQuery();
+            //a linha abaixo usa a biblioteca rs2cml.jar para preencher a tabela
+            tblEstoque.setModel(DbUtils.resultSetToTableModel(rs));
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
+
+    //método para adicionar quantidade ao estoque
+    private void adicionarEstoque() {
+        String sql = "insert into estoque (idIngrediente, quantidade) values (?, ?)";
+        try {
+            pst = conexao.prepareStatement(sql);
+            pst.setString(1, txtIdIngrediente.getText());
+            pst.setString(2, txtEstoqueQtd.getText());
+
+            if ((txtIdIngrediente.getText().isEmpty()) || (txtEstoqueQtd.getText().isEmpty())) {
+                JOptionPane.showMessageDialog(null, "Preencha todos os campos");
+            } else {
+                int adicionado = pst.executeUpdate();
+
+                if (adicionado > 0) {
+                    JOptionPane.showMessageDialog(null, "Estoque adicionado ao ingrediente");
+                    txtIdIngrediente.setText("");
+                    txtEstoqueQtd.setText("");
+                }
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
+
+    //métodos para setar os campos do formulário com o conteúdo da tabela estoque
+    public void setarCamposEstoque() {
+        int setar = tblEstoque.getSelectedRow();
+        txtIdIngrediente.setText(tblEstoque.getModel().getValueAt(setar, 0).toString());
+        txtEstoqueQtd.setText(tblEstoque.getModel().getValueAt(setar, 2).toString());
+
+        //a linha abaixo desabilita o botão adicionar do estoque
+        btnAddEstoque.setEnabled(false);
+    }
+
+    //métodos para alterar a quantidade do estoque
+    private void alterarEstoque() {
+        String sql = "update estoque set quantidade = ? where idIngrediente = ?";
+        try {
+            pst = conexao.prepareStatement(sql);
+            pst.setString(1, txtEstoqueQtd.getText());
+            pst.setString(2, txtIdIngrediente.getText());
+            if ((txtIdIngrediente.getText().isEmpty()) || (txtEstoqueQtd.getText().isEmpty())) {
+                JOptionPane.showMessageDialog(null, "Preencha todos os campos");
+            } else {
+                //a linha abaixo atualiza a tabela estoque com os dados do formulário
+                //a estrutura abaixo é usada para confirmar a alteração dos dados na tabela
+                int adicionado = pst.executeUpdate();
+                //a linha abaixo serve de apoio ao entendimento da lógica
+                if (adicionado > 0) {
+                    JOptionPane.showMessageDialog(null, "Quantidade do ingrediente alterada no estoque");
+                    btnAddEstoque.setEnabled(true);
+                    txtIdIngrediente.setText("");
+                    txtEstoqueQtd.setText("");
+                    ((DefaultTableModel) tblEstoque.getModel()).setRowCount(0);
+                }
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -170,13 +250,12 @@ public class TelaEstoque extends javax.swing.JInternalFrame {
         jLabel9 = new javax.swing.JLabel();
         txtEstoqueQtd = new javax.swing.JTextField();
         btnAddEstoque = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        btnAlterarEstoque = new javax.swing.JButton();
         jLabel10 = new javax.swing.JLabel();
-        jTextField2 = new javax.swing.JTextField();
+        txtPesqEstoque = new javax.swing.JTextField();
         jLabel11 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
-        jTable2 = new javax.swing.JTable();
+        tblEstoque = new javax.swing.JTable();
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -347,17 +426,31 @@ public class TelaEstoque extends javax.swing.JInternalFrame {
         jLabel9.setText("Quantidade");
 
         btnAddEstoque.setText("Adicionar");
+        btnAddEstoque.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddEstoqueActionPerformed(evt);
+            }
+        });
 
-        jButton2.setText("Alterar");
-
-        jButton3.setText("Excluir");
+        btnAlterarEstoque.setText("Alterar");
+        btnAlterarEstoque.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAlterarEstoqueActionPerformed(evt);
+            }
+        });
 
         jLabel10.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel10.setText("Pesquisar Estoque");
 
+        txtPesqEstoque.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtPesqEstoqueKeyReleased(evt);
+            }
+        });
+
         jLabel11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icones/find.png"))); // NOI18N
 
-        jTable2.setModel(new javax.swing.table.DefaultTableModel(
+        tblEstoque.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -365,10 +458,15 @@ public class TelaEstoque extends javax.swing.JInternalFrame {
                 {null, null, null, null}
             },
             new String [] {
-                "idIngrediente", "NomeIngrediente", "UnidadeMedida", "Quantidade"
+                "idIngrediente", "Ingrediente", "Quantidade", "UnidadeMedida"
             }
         ));
-        jScrollPane3.setViewportView(jTable2);
+        tblEstoque.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblEstoqueMouseClicked(evt);
+            }
+        });
+        jScrollPane3.setViewportView(tblEstoque);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -381,9 +479,7 @@ public class TelaEstoque extends javax.swing.JInternalFrame {
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(btnAddEstoque)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton3))
+                        .addComponent(btnAlterarEstoque))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel8)
@@ -392,16 +488,17 @@ public class TelaEstoque extends javax.swing.JInternalFrame {
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(txtIdIngrediente, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(txtEstoqueQtd, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addGap(18, 18, 18)
+                .addGap(96, 96, 96)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 398, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel10)
-                            .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 217, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtPesqEstoque, javax.swing.GroupLayout.PREFERRED_SIZE, 217, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel11)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(jLabel11)
+                        .addGap(0, 125, Short.MAX_VALUE))
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -421,15 +518,13 @@ public class TelaEstoque extends javax.swing.JInternalFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btnAddEstoque)
-                            .addComponent(jButton2)
-                            .addComponent(jButton3)))
+                            .addComponent(btnAlterarEstoque)))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel2Layout.createSequentialGroup()
                                 .addComponent(jLabel10)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(4, 4, 4))
+                                .addComponent(txtPesqEstoque, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jLabel11))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -454,10 +549,10 @@ public class TelaEstoque extends javax.swing.JInternalFrame {
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(16, Short.MAX_VALUE))
         );
 
-        setBounds(0, 0, 691, 358);
+        setBounds(0, 0, 691, 368);
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAddIngredienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddIngredienteActionPerformed
@@ -485,15 +580,34 @@ public class TelaEstoque extends javax.swing.JInternalFrame {
         removerIngrediente();
     }//GEN-LAST:event_btnExcluirIngredienteActionPerformed
 
+    private void txtPesqEstoqueKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPesqEstoqueKeyReleased
+        // método para pesquisar estoque
+        pesquisarEstoque();
+    }//GEN-LAST:event_txtPesqEstoqueKeyReleased
+
+    private void btnAddEstoqueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddEstoqueActionPerformed
+        // método para adicionar quantidade ao ingrediente no estoque
+        adicionarEstoque();
+    }//GEN-LAST:event_btnAddEstoqueActionPerformed
+
+    private void tblEstoqueMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblEstoqueMouseClicked
+        // método para setar os campos da tabela estoque com o formulário
+        setarCamposEstoque();
+    }//GEN-LAST:event_tblEstoqueMouseClicked
+
+    private void btnAlterarEstoqueActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAlterarEstoqueActionPerformed
+        // método para alterar a quantidade de ingrediente no estoque
+        alterarEstoque();
+    }//GEN-LAST:event_btnAlterarEstoqueActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAddEstoque;
     private javax.swing.JButton btnAddIngrediente;
+    private javax.swing.JButton btnAlterarEstoque;
     private javax.swing.JButton btnAlterarIngrediente;
     private javax.swing.JButton btnExcluirIngrediente;
     private javax.swing.JComboBox<String> cboUnIngrediente;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -511,13 +625,13 @@ public class TelaEstoque extends javax.swing.JInternalFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTable jTable1;
-    private javax.swing.JTable jTable2;
-    private javax.swing.JTextField jTextField2;
+    private javax.swing.JTable tblEstoque;
     private javax.swing.JTable tblIngrediente;
     private javax.swing.JTextField txtEstoqueQtd;
     private javax.swing.JTextField txtIdIngrediente;
     private javax.swing.JTextField txtIngrediente;
     private javax.swing.JTextField txtNomeIngrediente;
+    private javax.swing.JTextField txtPesqEstoque;
     private javax.swing.JTextField txtPesqIngrediente;
     // End of variables declaration//GEN-END:variables
 }
