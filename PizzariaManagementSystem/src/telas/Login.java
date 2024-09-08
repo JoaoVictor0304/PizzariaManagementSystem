@@ -44,9 +44,9 @@ public class Login extends javax.swing.JFrame {
                 if (perfil.equals("admin")) {
                     TelaPrincipal principal = new TelaPrincipal(rs.getString(2), rs.getString(5));
                     principal.setVisible(true);
-                    TelaPrincipal.menuUser.setEnabled(true);
-                    TelaPrincipal.MenuReceitas.setEnabled(true);
+                    TelaPrincipal.menuUser.setEnabled(true);                    
                     TelaPrincipal.menuEstoque.setEnabled(true);
+                    TelaPrincipal.menuCriarPizza.setEnabled(true);
                     TelaPrincipal.usuLabel.setText(rs.getString(2));
                     TelaPrincipal.cargoLabel.setText(rs.getString(5));
                     this.dispose();

@@ -73,9 +73,8 @@ public class TelaPrincipal extends javax.swing.JFrame {
         jMenu2 = new javax.swing.JMenu();
         jMenuItem7 = new javax.swing.JMenuItem();
         jMenuItem8 = new javax.swing.JMenuItem();
-        MenuReceitas = new javax.swing.JMenu();
-        jCheckBoxMenuItem1 = new javax.swing.JCheckBoxMenuItem();
-        jMenuItem6 = new javax.swing.JMenuItem();
+        menuReceitas = new javax.swing.JMenu();
+        menuCriarPizza = new javax.swing.JMenuItem();
         jMenu5 = new javax.swing.JMenu();
         menuAjuda = new javax.swing.JMenuItem();
         jMenu6 = new javax.swing.JMenu();
@@ -194,26 +193,18 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
         jMenuBar1.add(jMenu2);
 
-        MenuReceitas.setText("Receitas");
-        MenuReceitas.setEnabled(false);
+        menuReceitas.setText("Receitas");
 
-        jCheckBoxMenuItem1.setText("ListadeReceitas");
-        jCheckBoxMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+        menuCriarPizza.setText("Criar Pizza");
+        menuCriarPizza.setEnabled(false);
+        menuCriarPizza.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBoxMenuItem1ActionPerformed(evt);
+                menuCriarPizzaActionPerformed(evt);
             }
         });
-        MenuReceitas.add(jCheckBoxMenuItem1);
+        menuReceitas.add(menuCriarPizza);
 
-        jMenuItem6.setText("AdicionarReceitas");
-        jMenuItem6.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem6ActionPerformed(evt);
-            }
-        });
-        MenuReceitas.add(jMenuItem6);
-
-        jMenuBar1.add(MenuReceitas);
+        jMenuBar1.add(menuReceitas);
 
         jMenu5.setText("Ajuda");
 
@@ -291,19 +282,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jCheckBoxMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxMenuItem1ActionPerformed
-        Receitas receitas = new Receitas();
-        desktop.add(receitas);
-        receitas.setVisible(true);
-    }//GEN-LAST:event_jCheckBoxMenuItem1ActionPerformed
-
-    private void jMenuItem6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem6ActionPerformed
-        AdicionarReceitas addrecep = new AdicionarReceitas();
-        desktop.add(addrecep);
-        addrecep.setVisible(true);
-
-    }//GEN-LAST:event_jMenuItem6ActionPerformed
-
     private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem7ActionPerformed
         FazerPedido pedir = new FazerPedido();
         desktop.add(pedir);
@@ -363,16 +341,20 @@ public class TelaPrincipal extends javax.swing.JFrame {
         newlogin.setVisible(true);
     }//GEN-LAST:event_menuTrocUsuarioActionPerformed
 
+    private void menuCriarPizzaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuCriarPizzaActionPerformed
+        CriarPizza criar = new CriarPizza();
+        desktop.add(criar);
+        criar.setVisible(true);
+    }//GEN-LAST:event_menuCriarPizzaActionPerformed
+
     /**
      * @param args the command line arguments
      */
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    public static javax.swing.JMenu MenuReceitas;
     public static javax.swing.JLabel cargoLabel;
     private javax.swing.JLabel dataLabel;
     private javax.swing.JDesktopPane desktop;
-    private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItem1;
     private javax.swing.JDesktopPane jDesktopPane1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JMenu jMenu1;
@@ -381,12 +363,13 @@ public class TelaPrincipal extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu6;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem2;
-    private javax.swing.JMenuItem jMenuItem6;
     private javax.swing.JMenuItem jMenuItem7;
     private javax.swing.JMenuItem jMenuItem8;
     private javax.swing.JMenuItem menuAjuda;
     private javax.swing.JMenuItem menuCliente;
+    public static javax.swing.JMenuItem menuCriarPizza;
     public static javax.swing.JMenuItem menuEstoque;
+    private javax.swing.JMenu menuReceitas;
     private javax.swing.JMenuItem menuSair;
     private javax.swing.JMenuItem menuTrocUsuario;
     public static javax.swing.JMenuItem menuUser;
