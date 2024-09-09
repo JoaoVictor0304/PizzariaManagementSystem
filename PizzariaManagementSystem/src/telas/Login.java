@@ -40,6 +40,12 @@ public class Login extends javax.swing.JFrame {
             rs = ps.executeQuery();
             if (rs.next()) {
                 String perfil = rs.getString(5);
+                
+                int idUsuario = rs.getInt(1);// Pegando o ID do usuário
+                String username = rs.getString(2);// Pegando o nome do usuário
+                
+                //iniciar sessão com ID e Nome do usuário
+                UsuarioAtual.iniciarSessao(idUsuario, username);
 
                 if (perfil.equals("admin")) {
                     TelaPrincipal principal = new TelaPrincipal(rs.getString(2), rs.getString(5));
