@@ -7,6 +7,8 @@ package telas;
 import java.sql.*;
 import conexaodatabase.ModuloConexao;
 import javax.swing.JOptionPane;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 
 //importa recursos da biblioteca rs2xml.jar
@@ -28,6 +30,21 @@ public class TelaPedido extends javax.swing.JInternalFrame {
     public TelaPedido() {
         initComponents();
         conexao = ModuloConexao.connector();
+
+        txtPedidoId.getDocument().addDocumentListener(new DocumentListener() {
+
+            public void insertUpdate(DocumentEvent e) {
+                pesquisarItemPedido();  // Chama o método quando um valor é inserido
+            }
+
+            public void removeUpdate(DocumentEvent e) {
+                pesquisarItemPedido();  // Chama o método quando um valor é removido
+            }
+
+            public void changedUpdate(DocumentEvent e) {
+                pesquisarItemPedido();  // Chama o método quando há mudanças (ex.: estilo)
+            }
+        });
     }
 
     //método para pesquisar clientes pelo nome com filtro
@@ -86,9 +103,7 @@ public class TelaPedido extends javax.swing.JInternalFrame {
                 if (adicionado > 0) {
                     JOptionPane.showMessageDialog(null, "Pedido criado");
                     txtIdCliente.setText("");
-                    txtIdUsuario.setText("");
-                    txtNomeUsuario.setText("");
-                    txtObs.setText(null);
+                    txtObs.setText("");
                 }
             }
 
@@ -99,13 +114,103 @@ public class TelaPedido extends javax.swing.JInternalFrame {
 
     //método para pesquisar pedido
     private void pesquisarPedido() {
-        int pesquisaPedido = Integer.parseInt(txtPesqPedido.getText());
-        String sql = "select idPedido as id, datapedido as DataHora, tipoPedido as Tipo, status as Status, idcliente as idCliente, idUsuarios as idUsuario, metodoPagamento as MetodoPagamento, observacoes as Observações from tbpedido where idPedido like " + pesquisaPedido;
+        String sql = "select idPedido as id, datapedido as DataHora, tipoPedido as Tipo, status as Status, idcliente as idCliente, idUsuarios as idUsuario, metodoPagamento as MetodoPagamento, observacoes as Observações from tbpedido where idPedido like ? ";
         try {
-            pst = conexao.prepareStatement(sql);                       
+            pst = conexao.prepareStatement(sql);
+            //passando o conteúdo da caixa de pesquisa para o ?
+            //atenção ao "%" - continuação da String sql
+            pst.setString(1, txtPesqPedido.getText() + "%");
+
             rs = pst.executeQuery();
             //a linha abaixo usa a biblioteca rs2cml.jar para preencher a tabela
             tblPesqPedido.setModel(DbUtils.resultSetToTableModel(rs));
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
+
+    //método para setar os campo da tabela pedido para o formulário
+    private void setarCamposPedido() {
+        int setar = tblPesqPedido.getSelectedRow();
+        txtIdPedido.setText(tblPesqPedido.getModel().getValueAt(setar, 0).toString());
+        txtDataHora.setText(tblPesqPedido.getModel().getValueAt(setar, 1).toString());
+        cboTipoPedido.setSelectedItem(tblPesqPedido.getModel().getValueAt(setar, 2).toString());
+        cboStatus.setSelectedItem(tblPesqPedido.getModel().getValueAt(setar, 3).toString());
+        txtIdCliente.setText(tblPesqPedido.getModel().getValueAt(setar, 4).toString());
+        txtIdUsuario.setText(tblPesqPedido.getModel().getValueAt(setar, 5).toString());
+        cboPagamento.setSelectedItem(tblPesqPedido.getModel().getValueAt(setar, 6).toString());
+        txtObs.setText(tblPesqPedido.getModel().getValueAt(setar, 7).toString());
+        txtPedidoId.setText(tblPesqPedido.getModel().getValueAt(setar, 0).toString());
+    }
+
+    //método para pesquisar pizza pelo nome com filtro
+    private void pesquisarPizza() {
+        String sql = "select idProduto as id, nome as Nome, descricao as Descrição, precoBrotinho as PreçoBrotinho, precoGrande as PreçoGrande from tbproduto where nome like ?";
+        try {
+            pst = conexao.prepareStatement(sql);
+            //passando o conteúdo da caixa de pesquisa para o ?
+            //atenção ao "%" - continuação da String sql
+            pst.setString(1, txtPesqPizza.getText() + "%");
+
+            rs = pst.executeQuery();
+            //a linha abaixo usa a biblioteca rs2cml.jar para preencher a tabela
+            tblPizza.setModel(DbUtils.resultSetToTableModel(rs));
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
+
+    private void setarCamposProduto() {
+        int setar = tblPizza.getSelectedRow();
+        txtIdProduto.setText(tblPizza.getModel().getValueAt(setar, 0).toString());
+        txtNomeProduto.setText(tblPizza.getModel().getValueAt(setar, 1).toString());
+    }
+
+    private void incluirItem() {
+        String sql = "insert into itempedido (idPedido, idProduto, tamanho, quantidade, precoUnitario) values (?, ?, ?, ?, ?)";
+
+        try {
+            pst = conexao.prepareStatement(sql);
+            pst.setString(1, txtPedidoId.getText());
+            pst.setString(2, txtIdProduto.getText());
+            pst.setString(3, cboTamanho.getSelectedItem().toString());
+            pst.setString(4, txtQtd.getText());
+            pst.setString(5, txtPrecoUni.getText());
+
+            if ((txtPedidoId.getText().isEmpty()) || (txtIdProduto.getText().isEmpty()) || (txtQtd.getText().isEmpty()) || (txtPrecoUni.getText().isEmpty())) {
+                JOptionPane.showMessageDialog(null, "Preencha todos os campos");
+            } else {
+                int adicionado = pst.executeUpdate();
+                if (adicionado > 0) {
+                    JOptionPane.showMessageDialog(null, "Item incluido no pedido");
+                    txtIdProduto.setText("");
+                    txtNomeProduto.setText("");
+                    txtQtd.setText("");
+                    txtPrecoUni.setText("");
+                    pesquisarItemPedido();//chama o método de pesquisar o item do pedido
+                }
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
+
+    //método para pesquisar item pedido
+    private void pesquisarItemPedido() {
+        String sql = "SELECT itemPedido.idItemPedido, itemPedido.idPedido, itemPedido.idProduto, tbproduto.nome, itemPedido.tamanho, itemPedido.quantidade, itemPedido.precoUnitario, itemPedido.valorTotal FROM itempedido INNER JOIN tbproduto ON itemPedido.idProduto = tbproduto.idProduto WHERE itemPedido.idPedido = ?";
+        try {
+            pst = conexao.prepareStatement(sql);
+            //passando o conteúdo da caixa de pesquisa para o ?
+            //atenção ao "%" - continuação da String sql
+            pst.setString(1, txtPedidoId.getText());
+            if (!txtPedidoId.getText().trim().isEmpty()) {
+
+                rs = pst.executeQuery();
+                //a linha abaixo usa a biblioteca rs2cml.jar para preencher a tabela
+                tblItemPedido.setModel(DbUtils.resultSetToTableModel(rs));
+            }
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
@@ -142,9 +247,9 @@ public class TelaPedido extends javax.swing.JInternalFrame {
         jPanel2 = new javax.swing.JPanel();
         jLabel8 = new javax.swing.JLabel();
         txtPesqPedido = new javax.swing.JTextField();
-        jLabel9 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblPesqPedido = new javax.swing.JTable();
+        jLabel9 = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
         txtObs = new javax.swing.JTextField();
         jPanel3 = new javax.swing.JPanel();
@@ -155,31 +260,31 @@ public class TelaPedido extends javax.swing.JInternalFrame {
         tblClientes = new javax.swing.JTable();
         jPanel4 = new javax.swing.JPanel();
         jLabel13 = new javax.swing.JLabel();
-        jTextField9 = new javax.swing.JTextField();
+        txtPesqPizza = new javax.swing.JTextField();
         jLabel14 = new javax.swing.JLabel();
         jLabel15 = new javax.swing.JLabel();
         jLabel16 = new javax.swing.JLabel();
-        jTextField10 = new javax.swing.JTextField();
-        jTextField11 = new javax.swing.JTextField();
+        txtIdProduto = new javax.swing.JTextField();
+        txtNomeProduto = new javax.swing.JTextField();
         jLabel17 = new javax.swing.JLabel();
-        jComboBox4 = new javax.swing.JComboBox<>();
+        cboTamanho = new javax.swing.JComboBox<>();
         jLabel18 = new javax.swing.JLabel();
-        jTextField12 = new javax.swing.JTextField();
+        txtQtd = new javax.swing.JTextField();
         jLabel19 = new javax.swing.JLabel();
-        jTextField13 = new javax.swing.JTextField();
-        jLabel20 = new javax.swing.JLabel();
-        jTextField14 = new javax.swing.JTextField();
+        txtPrecoUni = new javax.swing.JTextField();
         jScrollPane3 = new javax.swing.JScrollPane();
-        jTable3 = new javax.swing.JTable();
+        tblPizza = new javax.swing.JTable();
         jLabel21 = new javax.swing.JLabel();
-        jTextField15 = new javax.swing.JTextField();
+        txtPedidoId = new javax.swing.JTextField();
         jButton4 = new javax.swing.JButton();
         jButton5 = new javax.swing.JButton();
         jButton6 = new javax.swing.JButton();
         jScrollPane5 = new javax.swing.JScrollPane();
-        jTable5 = new javax.swing.JTable();
+        tblItemPedido = new javax.swing.JTable();
         jLabel22 = new javax.swing.JLabel();
         jButton7 = new javax.swing.JButton();
+        jLabel20 = new javax.swing.JLabel();
+        jTextField1 = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
@@ -271,7 +376,7 @@ public class TelaPedido extends javax.swing.JInternalFrame {
 
         jLabel4.setText("Status pedido");
 
-        cboStatus.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Aguardando", "Em preparação", "Pronto", "Entregue" }));
+        cboStatus.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Aguardando", "Em Preparação", "Pronto", "Entregue" }));
 
         jLabel5.setText("id Cliente");
 
@@ -298,8 +403,6 @@ public class TelaPedido extends javax.swing.JInternalFrame {
             }
         });
 
-        jLabel9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icones/find.png"))); // NOI18N
-
         tblPesqPedido.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null, null, null, null},
@@ -311,7 +414,14 @@ public class TelaPedido extends javax.swing.JInternalFrame {
                 "id", "DataHora", "TipoPedido", "Status", "idCliente", "idUsuário", "MétodoPagamento", "Observações"
             }
         ));
+        tblPesqPedido.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblPesqPedidoMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(tblPesqPedido);
+
+        jLabel9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icones/find.png"))); // NOI18N
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -320,7 +430,7 @@ public class TelaPedido extends javax.swing.JInternalFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 562, Short.MAX_VALUE)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel8)
@@ -334,15 +444,15 @@ public class TelaPedido extends javax.swing.JInternalFrame {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel9)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel8)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtPesqPedido, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtPesqPedido, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel9))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 68, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(8, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         jLabel10.setText("Observações");
@@ -415,9 +525,14 @@ public class TelaPedido extends javax.swing.JInternalFrame {
         jLabel13.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel13.setText("Items do pedido");
 
-        jTextField9.addActionListener(new java.awt.event.ActionListener() {
+        txtPesqPizza.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField9ActionPerformed(evt);
+                txtPesqPizzaActionPerformed(evt);
+            }
+        });
+        txtPesqPizza.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtPesqPizzaKeyReleased(evt);
             }
         });
 
@@ -428,17 +543,19 @@ public class TelaPedido extends javax.swing.JInternalFrame {
 
         jLabel16.setText("id produto");
 
+        txtIdProduto.setEnabled(false);
+
+        txtNomeProduto.setEnabled(false);
+
         jLabel17.setText("Tamanho");
 
-        jComboBox4.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Brotinho", "Grande" }));
+        cboTamanho.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Brotinho", "Grande" }));
 
         jLabel18.setText("Quantidade");
 
         jLabel19.setText("Preço unitário R$");
 
-        jLabel20.setText("Preço total R$");
-
-        jTable3.setModel(new javax.swing.table.DefaultTableModel(
+        tblPizza.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null},
                 {null, null, null, null, null},
@@ -449,28 +566,40 @@ public class TelaPedido extends javax.swing.JInternalFrame {
                 "id", "Nome", "Descrição", "PreçoBroto", "PreçoGrande"
             }
         ));
-        jScrollPane3.setViewportView(jTable3);
+        tblPizza.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblPizzaMouseClicked(evt);
+            }
+        });
+        jScrollPane3.setViewportView(tblPizza);
 
         jLabel21.setText("id pedido");
 
+        txtPedidoId.setEnabled(false);
+
         jButton4.setText("Adicionar item");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
 
         jButton5.setText("Alterar");
 
         jButton6.setText("Excluir");
 
-        jTable5.setModel(new javax.swing.table.DefaultTableModel(
+        tblItemPedido.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null}
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "idItemProduto", "idPedido", "idProduto", "Tamanho", "Quantidade", "PreçoUnitário", "Preçototal"
+                "idItemProduto", "idPedido", "idProduto", "Nome", "Tamanho", "Quantidade", "PreçoUnitário", "Preçototal"
             }
         ));
-        jScrollPane5.setViewportView(jTable5);
+        jScrollPane5.setViewportView(tblItemPedido);
 
         jLabel22.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel22.setText("Itens do pedido");
@@ -478,6 +607,10 @@ public class TelaPedido extends javax.swing.JInternalFrame {
 
         jButton7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icones/printer.png"))); // NOI18N
         jButton7.setToolTipText("Imprimir pedido");
+
+        jLabel20.setText("id Item Pedido");
+
+        jTextField1.setEnabled(false);
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -489,46 +622,44 @@ public class TelaPedido extends javax.swing.JInternalFrame {
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addComponent(jLabel16)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField10, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txtIdProduto, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField11, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(txtNomeProduto, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addComponent(jLabel17)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jComboBox4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(cboTamanho, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addComponent(jLabel18)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField12, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(txtQtd, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addComponent(jLabel19)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField13, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(txtPrecoUni, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel4Layout.createSequentialGroup()
-                                .addComponent(jLabel20)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jTextField14, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel4Layout.createSequentialGroup()
-                                .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButton5)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButton6)))
+                        .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 108, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton5)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton6)
                         .addGap(18, 18, 18)
                         .addComponent(jButton7))
                     .addComponent(jLabel13)
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addComponent(jLabel21)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField15, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(txtPedidoId, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel20)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
                         .addComponent(jLabel14)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField9, javax.swing.GroupLayout.PREFERRED_SIZE, 285, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txtPesqPizza, javax.swing.GroupLayout.PREFERRED_SIZE, 285, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel15)
                         .addGap(15, 15, 15))
@@ -550,11 +681,13 @@ public class TelaPedido extends javax.swing.JInternalFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel21)
-                            .addComponent(jTextField15, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(txtPedidoId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel20)
+                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addGap(11, 11, 11)
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jTextField9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtPesqPizza, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel14)))
                     .addComponent(jLabel15))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -566,36 +699,31 @@ public class TelaPedido extends javax.swing.JInternalFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel16)
-                            .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(jTextField10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jTextField11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(txtIdProduto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txtNomeProduto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel16))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(jPanel4Layout.createSequentialGroup()
                                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                     .addComponent(jLabel17)
-                                    .addComponent(jComboBox4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(cboTamanho, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jTextField12, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txtQtd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jLabel18))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                     .addComponent(jLabel19)
-                                    .addComponent(jTextField13, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel20)
-                                    .addComponent(jTextField14, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(txtPrecoUni, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(28, 28, 28)
                                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                     .addComponent(jButton4)
                                     .addComponent(jButton5)
                                     .addComponent(jButton6)))
                             .addComponent(jButton7))))
-                .addContainerGap(56, Short.MAX_VALUE))
+                .addContainerGap(41, Short.MAX_VALUE))
         );
 
         jButton1.setText("Criar Pedido");
@@ -702,15 +830,15 @@ public class TelaPedido extends javax.swing.JInternalFrame {
                     .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addGap(17, 17, 17))
         );
 
         setBounds(0, 0, 863, 655);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jTextField9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField9ActionPerformed
+    private void txtPesqPizzaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPesqPizzaActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField9ActionPerformed
+    }//GEN-LAST:event_txtPesqPizzaActionPerformed
 
     private void txtCliPesquisarKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtCliPesquisarKeyReleased
         // método para pesquisar cliente
@@ -732,8 +860,28 @@ public class TelaPedido extends javax.swing.JInternalFrame {
         setarCamposUsuario();
     }//GEN-LAST:event_formInternalFrameActivated
 
+    private void tblPesqPedidoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblPesqPedidoMouseClicked
+        // método para setar os campos da tabela pedido e colocar no formulário
+        setarCamposPedido();
+    }//GEN-LAST:event_tblPesqPedidoMouseClicked
+
+    private void txtPesqPizzaKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPesqPizzaKeyReleased
+        // método para pesquisar pizza
+        pesquisarPizza();
+    }//GEN-LAST:event_txtPesqPizzaKeyReleased
+
+    private void tblPizzaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblPizzaMouseClicked
+        // método para setar os campos do produto
+        setarCamposProduto();
+    }//GEN-LAST:event_tblPizzaMouseClicked
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        // método para inserir item ao pedido
+        incluirItem();
+    }//GEN-LAST:event_jButton4ActionPerformed
+
     private void txtPesqPedidoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPesqPedidoKeyReleased
-        // método para pesquisar pedidos
+        // método para pesquisar pedido
         pesquisarPedido();
     }//GEN-LAST:event_txtPesqPedidoKeyReleased
 
@@ -741,6 +889,7 @@ public class TelaPedido extends javax.swing.JInternalFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox<String> cboPagamento;
     private javax.swing.JComboBox<String> cboStatus;
+    private javax.swing.JComboBox<String> cboTamanho;
     private javax.swing.JComboBox<String> cboTipoPedido;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
@@ -749,7 +898,6 @@ public class TelaPedido extends javax.swing.JInternalFrame {
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
-    private javax.swing.JComboBox<String> jComboBox4;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -781,25 +929,25 @@ public class TelaPedido extends javax.swing.JInternalFrame {
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
-    private javax.swing.JTable jTable3;
     private javax.swing.JTable jTable4;
-    private javax.swing.JTable jTable5;
-    private javax.swing.JTextField jTextField10;
-    private javax.swing.JTextField jTextField11;
-    private javax.swing.JTextField jTextField12;
-    private javax.swing.JTextField jTextField13;
-    private javax.swing.JTextField jTextField14;
-    private javax.swing.JTextField jTextField15;
-    private javax.swing.JTextField jTextField9;
+    private javax.swing.JTextField jTextField1;
     private javax.swing.JTable tblClientes;
+    private javax.swing.JTable tblItemPedido;
     private javax.swing.JTable tblPesqPedido;
+    private javax.swing.JTable tblPizza;
     private javax.swing.JTextField txtCliPesquisar;
     private javax.swing.JTextField txtDataHora;
     private javax.swing.JTextField txtIdCliente;
     private javax.swing.JTextField txtIdPedido;
+    private javax.swing.JTextField txtIdProduto;
     private javax.swing.JTextField txtIdUsuario;
+    private javax.swing.JTextField txtNomeProduto;
     private javax.swing.JTextField txtNomeUsuario;
     private javax.swing.JTextField txtObs;
+    private javax.swing.JTextField txtPedidoId;
     private javax.swing.JTextField txtPesqPedido;
+    private javax.swing.JTextField txtPesqPizza;
+    private javax.swing.JTextField txtPrecoUni;
+    private javax.swing.JTextField txtQtd;
     // End of variables declaration//GEN-END:variables
 }

@@ -345,7 +345,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
     }//GEN-LAST:event_menuEstoqueActionPerformed
 
     private void menuTrocUsuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuTrocUsuarioActionPerformed
-        Login newlogin = new Login();
+        Login newlogin = new Login();        
         this.dispose();
         newlogin.setVisible(true);
     }//GEN-LAST:event_menuTrocUsuarioActionPerformed
