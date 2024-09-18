@@ -71,8 +71,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
         menuEstoque = new javax.swing.JMenuItem();
         jMenuItem2 = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
-        jMenuItem7 = new javax.swing.JMenuItem();
-        jMenuItem8 = new javax.swing.JMenuItem();
         jMenuItem1 = new javax.swing.JMenuItem();
         menuReceitas = new javax.swing.JMenu();
         menuCriarPizza = new javax.swing.JMenuItem();
@@ -176,22 +174,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
         jMenu2.setText("Pedidos");
 
-        jMenuItem7.setText("Fazer Pedido");
-        jMenuItem7.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem7ActionPerformed(evt);
-            }
-        });
-        jMenu2.add(jMenuItem7);
-
-        jMenuItem8.setText("Pedidos Atuais");
-        jMenuItem8.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem8ActionPerformed(evt);
-            }
-        });
-        jMenu2.add(jMenuItem8);
-
         jMenuItem1.setText("Pedido");
         jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -291,17 +273,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jMenuItem7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem7ActionPerformed
-        FazerPedido pedir = new FazerPedido();
-        desktop.add(pedir);
-        pedir.setVisible(true);
-    }//GEN-LAST:event_jMenuItem7ActionPerformed
-
-    private void jMenuItem8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem8ActionPerformed
-        PedidosAtuais pedidos = new PedidosAtuais();
-        pedidos.setVisible(true);
-    }//GEN-LAST:event_jMenuItem8ActionPerformed
-
     private void jMenu1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenu1ActionPerformed
 
     }//GEN-LAST:event_jMenu1ActionPerformed
@@ -380,8 +351,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
-    private javax.swing.JMenuItem jMenuItem7;
-    private javax.swing.JMenuItem jMenuItem8;
     private javax.swing.JMenuItem menuAjuda;
     private javax.swing.JMenuItem menuCliente;
     public static javax.swing.JMenuItem menuCriarPizza;

@@ -185,6 +185,7 @@ public class TelaPedido extends javax.swing.JInternalFrame {
                 int adicionado = pst.executeUpdate();
                 if (adicionado > 0) {
                     JOptionPane.showMessageDialog(null, "Item incluido no pedido");
+                    atualizaEstoque();//método para atualizar estoque
                     txtIdProduto.setText("");
                     txtNomeProduto.setText("");
                     txtQtd.setText("");
@@ -212,6 +213,21 @@ public class TelaPedido extends javax.swing.JInternalFrame {
                 tblItemPedido.setModel(DbUtils.resultSetToTableModel(rs));
             }
 
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
+
+    //método para atualizar estoque assim que um produto por inserido ao pedido
+    private void atualizaEstoque() {
+        String sql = "UPDATE estoque e JOIN tbprodutoingrediente pi ON e.idIngrediente = pi.idIngrediente SET e.quantidade = e.quantidade - (pi.quantidade * ?) WHERE pi.idProduto = ?";
+        try {
+            pst = conexao.prepareStatement(sql);
+            pst.setString(1, txtQtd.getText());
+            pst.setString(2, txtIdProduto.getText());
+            
+            pst.executeUpdate();
+            
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
         }
