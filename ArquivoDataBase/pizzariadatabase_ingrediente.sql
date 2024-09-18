@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 8.0.38, for Win64 (x86_64)
 --
--- Host: localhost    Database: pizzariadatabase
+-- Host: 127.0.0.1    Database: pizzariadatabase
 -- ------------------------------------------------------
 -- Server version	8.0.39
 
@@ -16,25 +16,28 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `mesas`
+-- Table structure for table `ingrediente`
 --
 
-DROP TABLE IF EXISTS `mesas`;
+DROP TABLE IF EXISTS `ingrediente`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `mesas` (
-  `idMesa` int NOT NULL,
-  PRIMARY KEY (`idMesa`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+CREATE TABLE `ingrediente` (
+  `idIngrediente` int NOT NULL AUTO_INCREMENT,
+  `nome` varchar(100) NOT NULL,
+  `unidadeMedida` varchar(10) NOT NULL,
+  PRIMARY KEY (`idIngrediente`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `mesas`
+-- Dumping data for table `ingrediente`
 --
 
-LOCK TABLES `mesas` WRITE;
-/*!40000 ALTER TABLE `mesas` DISABLE KEYS */;
-/*!40000 ALTER TABLE `mesas` ENABLE KEYS */;
+LOCK TABLES `ingrediente` WRITE;
+/*!40000 ALTER TABLE `ingrediente` DISABLE KEYS */;
+INSERT INTO `ingrediente` VALUES (1,'Mussarela','g'),(2,'Molho de tomate','l'),(3,'Azeitona','unidade'),(4,'Pepperoni','g'),(5,'Brócolis','g'),(6,'Massa','kg');
+/*!40000 ALTER TABLE `ingrediente` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -46,4 +49,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-09-01 13:59:22
+-- Dump completed on 2024-09-18 10:07:16

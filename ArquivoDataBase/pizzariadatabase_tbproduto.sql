@@ -16,30 +16,30 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `usuarios`
+-- Table structure for table `tbproduto`
 --
 
-DROP TABLE IF EXISTS `usuarios`;
+DROP TABLE IF EXISTS `tbproduto`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `usuarios` (
-  `idUsuarios` int NOT NULL,
-  `usuario` varchar(50) NOT NULL,
-  `login` varchar(45) NOT NULL,
-  `senha` varchar(45) NOT NULL,
-  `perfil` varchar(20) NOT NULL,
-  PRIMARY KEY (`idUsuarios`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
+CREATE TABLE `tbproduto` (
+  `idProduto` int NOT NULL AUTO_INCREMENT,
+  `nome` varchar(100) NOT NULL,
+  `descricao` text,
+  `precoBrotinho` decimal(10,2) NOT NULL,
+  `precoGrande` decimal(10,2) NOT NULL,
+  PRIMARY KEY (`idProduto`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `usuarios`
+-- Dumping data for table `tbproduto`
 --
 
-LOCK TABLES `usuarios` WRITE;
-/*!40000 ALTER TABLE `usuarios` DISABLE KEYS */;
-INSERT INTO `usuarios` VALUES (1,'João Victor','joao','123','admin'),(2,'Administrador','admin','admin','admin'),(3,'Pedro Henrique','pedro','123','user');
-/*!40000 ALTER TABLE `usuarios` ENABLE KEYS */;
+LOCK TABLES `tbproduto` WRITE;
+/*!40000 ALTER TABLE `tbproduto` DISABLE KEYS */;
+INSERT INTO `tbproduto` VALUES (1,'Mussarela','Pizza de mussarela com molho de tomate e azeitonas',30.00,60.00),(2,'Brócolis','Pizza de brócolis, molho de tomate e azeitonas',30.00,60.00),(3,'Pepperoni','Pizza de pepperoni, molho de tomate e mussarela',35.00,65.00);
+/*!40000 ALTER TABLE `tbproduto` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

@@ -16,31 +16,37 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `cliente`
+-- Table structure for table `tbpedido`
 --
 
-DROP TABLE IF EXISTS `cliente`;
+DROP TABLE IF EXISTS `tbpedido`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `cliente` (
-  `idcliente` int NOT NULL AUTO_INCREMENT,
-  `nomecli` varchar(50) NOT NULL,
-  `endcli` varchar(100) NOT NULL,
-  `fonecli` varchar(50) NOT NULL,
-  `emailcli` varchar(50) DEFAULT NULL,
-  PRIMARY KEY (`idcliente`),
-  UNIQUE KEY `fonecli_UNIQUE` (`fonecli`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE `tbpedido` (
+  `idPedido` int NOT NULL AUTO_INCREMENT,
+  `datapedido` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `tipoPedido` enum('Balcão','Delivery') NOT NULL,
+  `status` enum('Aguardando','Em Preparação','Pronto','Entregue') NOT NULL,
+  `idcliente` int DEFAULT NULL,
+  `idUsuarios` int DEFAULT NULL,
+  `metodoPagamento` enum('Dinheiro','Cartão','Pix') NOT NULL,
+  `observacoes` text,
+  PRIMARY KEY (`idPedido`),
+  KEY `idcliente` (`idcliente`),
+  KEY `idUsuarios` (`idUsuarios`),
+  CONSTRAINT `tbpedido_ibfk_1` FOREIGN KEY (`idcliente`) REFERENCES `cliente` (`idcliente`),
+  CONSTRAINT `tbpedido_ibfk_2` FOREIGN KEY (`idUsuarios`) REFERENCES `usuarios` (`idUsuarios`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `cliente`
+-- Dumping data for table `tbpedido`
 --
 
-LOCK TABLES `cliente` WRITE;
-/*!40000 ALTER TABLE `cliente` DISABLE KEYS */;
-INSERT INTO `cliente` VALUES (5,'João Victor','Rua A, 123','94002-8922','teste@teste'),(6,'Je Min Lee','Rua B, 111','99999-9997','lee@teste.com'),(7,'Ricardo da Silva Sauro','Rua C, 2345','97751-8922','ricardinho123@teste.com'),(9,'Marcelo Godoy','Rua Palmeira, 985','90000-9995','marcelo@teste.com'),(10,'José Luiz Martins','Rua Salvador, 436','98989-9999','zeluiz@gmail.com'),(14,'Pedro Henrique','Rua Tuiuti, 6478','97458-5881','pedro@gmail.com');
-/*!40000 ALTER TABLE `cliente` ENABLE KEYS */;
+LOCK TABLES `tbpedido` WRITE;
+/*!40000 ALTER TABLE `tbpedido` DISABLE KEYS */;
+INSERT INTO `tbpedido` VALUES (1,'2024-09-07 11:44:05','Delivery','Aguardando',5,1,'Cartão',''),(2,'2024-09-09 20:05:36','Delivery','Em Preparação',5,1,'Cartão',''),(3,'2024-09-09 20:08:04','Balcão','Pronto',14,1,'Dinheiro',''),(4,'2024-09-10 12:28:31','Delivery','Entregue',6,1,'Pix',''),(5,'2024-09-18 12:48:58','Delivery','Em Preparação',9,1,'Cartão',''),(6,'2024-09-18 12:59:08','Balcão','Aguardando',14,1,'Pix','');
+/*!40000 ALTER TABLE `tbpedido` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
