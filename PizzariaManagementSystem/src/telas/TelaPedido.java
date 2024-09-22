@@ -23,6 +23,7 @@ public class TelaPedido extends javax.swing.JInternalFrame {
     Connection conexao = null;
     PreparedStatement pst = null;
     ResultSet rs = null;
+    PreparedStatement pst2 = null;
 
     /**
      * Creates new form TelaPedido
@@ -170,6 +171,7 @@ public class TelaPedido extends javax.swing.JInternalFrame {
 
     private void incluirItem() {
         String sql = "insert into itempedido (idPedido, idProduto, tamanho, quantidade, precoUnitario) values (?, ?, ?, ?, ?)";
+        String ingrediente = "SELECT pi.idIngrediente, pi.quantidade AS quantidade_necessaria, e.quantidade AS quantidade_estoque FROM tbprodutoingrediente pi JOIN estoque e ON pi.idIngrediente = e.idIngrediente WHERE pi.idProduto = ? AND pi.quantidade > e.quantidade;";
 
         try {
             pst = conexao.prepareStatement(sql);
@@ -179,19 +181,29 @@ public class TelaPedido extends javax.swing.JInternalFrame {
             pst.setString(4, txtQtd.getText());
             pst.setString(5, txtPrecoUni.getText());
 
+            pst2 = conexao.prepareStatement(ingrediente);
+            pst2.setString(1, txtIdProduto.getText());
+
             if ((txtPedidoId.getText().isEmpty()) || (txtIdProduto.getText().isEmpty()) || (txtQtd.getText().isEmpty()) || (txtPrecoUni.getText().isEmpty())) {
                 JOptionPane.showMessageDialog(null, "Preencha todos os campos");
             } else {
-                int adicionado = pst.executeUpdate();
-                if (adicionado > 0) {
-                    JOptionPane.showMessageDialog(null, "Item incluido no pedido");
-                    atualizaEstoque();//método para atualizar estoque
-                    txtIdProduto.setText("");
-                    txtNomeProduto.setText("");
-                    txtQtd.setText("");
-                    txtPrecoUni.setText("");
-                    pesquisarItemPedido();//chama o método de pesquisar o item do pedido
+                rs = pst2.executeQuery();
+                //verifica se tem ingrediente suficiente no estoque para inserir o produto ao pedido
+                if (rs.next()) {
+                    JOptionPane.showMessageDialog(null, "Estoque insuficiente para o ingrediente ID: " + rs.getString("idIngrediente"));
+                } else {
+                    int adicionado = pst.executeUpdate();
+                    if (adicionado > 0) {
+                        JOptionPane.showMessageDialog(null, "Item incluido no pedido");
+                        atualizaEstoque();//método para atualizar estoque
+                        txtIdProduto.setText("");
+                        txtNomeProduto.setText("");
+                        txtQtd.setText("");
+                        txtPrecoUni.setText("");
+                        pesquisarItemPedido();//chama o método de pesquisar o item do pedido
+                    }
                 }
+
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
@@ -225,9 +237,9 @@ public class TelaPedido extends javax.swing.JInternalFrame {
             pst = conexao.prepareStatement(sql);
             pst.setString(1, txtQtd.getText());
             pst.setString(2, txtIdProduto.getText());
-            
+
             pst.executeUpdate();
-            
+
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
         }
