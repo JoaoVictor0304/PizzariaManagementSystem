@@ -113,6 +113,61 @@ public class TelaPedido extends javax.swing.JInternalFrame {
         }
     }
 
+    //método para alterar pedido
+    private void alterarPedido() {
+        String sql = "update tbpedido set tipoPedido = ?, status = ?, idcliente = ?, idUsuarios = ?, metodoPagamento = ?, observacoes = ? where idPedido = ?";
+        try {
+            pst = conexao.prepareStatement(sql);
+            pst.setString(1, cboTipoPedido.getSelectedItem().toString());
+            pst.setString(2, cboStatus.getSelectedItem().toString());
+            pst.setString(3, txtIdCliente.getText());
+            pst.setString(4, txtIdUsuario.getText());
+            pst.setString(5, cboPagamento.getSelectedItem().toString());
+            pst.setString(6, txtObs.getText());
+            pst.setString(7, txtIdPedido.getText());
+            int adicionado = pst.executeUpdate();
+            if (adicionado > 0) {
+                JOptionPane.showMessageDialog(null, "Dados do pedido alterado");
+
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
+
+    //método para excluir pedido
+    private void excluirPedido() {
+        int confirma = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja remover este pedido ?", "Atenção", JOptionPane.YES_NO_OPTION);
+        if (confirma == JOptionPane.YES_OPTION) {
+            String sql = "delete from tbpedido where idPedido = ?";
+            String consulta = "SELECT COUNT(*) AS total FROM itempedido WHERE idPedido = ?;";
+            try {
+                pst2 = conexao.prepareStatement(consulta);
+                pst2.setString(1, txtIdPedido.getText());
+                rs = pst2.executeQuery();
+
+                if (rs.next() && rs.getInt("total") > 0) {
+                    JOptionPane.showMessageDialog(null, "É necessário excluir os itens do pedido antes de excluir o pedido!");
+                } else {
+                    pst = conexao.prepareStatement(sql);
+                    pst.setString(1, txtIdPedido.getText());
+
+                    int apagado = pst.executeUpdate();
+                    if (apagado > 0) {
+                        JOptionPane.showMessageDialog(null, "Pedido removido");
+                        txtIdPedido.setText(null);
+                        txtDataHora.setText(null);
+                        txtIdCliente.setText(null);
+                    }
+                }
+
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, e);
+            }
+        }
+    }
+
     //método para pesquisar pedido
     private void pesquisarPedido() {
         String sql = "select idPedido as id, datapedido as DataHora, tipoPedido as Tipo, status as Status, idcliente as idCliente, idUsuarios as idUsuario, metodoPagamento as MetodoPagamento, observacoes as Observações from tbpedido where idPedido like ? ";
@@ -210,6 +265,56 @@ public class TelaPedido extends javax.swing.JInternalFrame {
         }
     }
 
+    private void alterarItemPedido() {
+        String sql = "update itempedido set idPedido = ?, idProduto = ?, tamanho = ?, quantidade = ?, precoUnitario = ? where idItemPedido = ?";
+        try {
+            pst = conexao.prepareStatement(sql);
+            pst.setString(1, txtPedidoId.getText());
+            pst.setString(2, txtIdProduto.getText());
+            pst.setString(3, cboTamanho.getSelectedItem().toString());
+            pst.setString(4, txtQtd.getText());
+            pst.setString(5, txtPrecoUni.getText());
+            pst.setString(6, txtItemPedido.getText());
+            int adicionado = pst.executeUpdate();
+            if (adicionado > 0) {
+                JOptionPane.showMessageDialog(null, "Dados do item do pedido alterado");
+                pesquisarItemPedido();
+
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
+
+    private void excluirItemPedido() {
+        int confirma = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja remover este item do pedido?", "Atenção", JOptionPane.YES_NO_OPTION);
+        if (confirma == JOptionPane.YES_OPTION) {
+            String sql = "delete from itempedido where idItemPedido = ?";
+
+            try {
+
+                pst = conexao.prepareStatement(sql);
+                pst.setString(1, txtItemPedido.getText());
+
+                int apagado = pst.executeUpdate();
+                if (apagado > 0) {
+                    JOptionPane.showMessageDialog(null, "Item excluído do pedido");
+                    txtIdProduto.setText("");
+                    txtItemPedido.setText("");
+                    txtNomeProduto.setText("");
+                    txtQtd.setText("");
+                    txtPrecoUni.setText("");
+                    pesquisarItemPedido();
+
+                }
+
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, e);
+            }
+        }
+    }
+
     //método para pesquisar item pedido
     private void pesquisarItemPedido() {
         String sql = "SELECT itemPedido.idItemPedido, itemPedido.idPedido, itemPedido.idProduto, tbproduto.nome, itemPedido.tamanho, itemPedido.quantidade, itemPedido.precoUnitario, itemPedido.valorTotal FROM itempedido INNER JOIN tbproduto ON itemPedido.idProduto = tbproduto.idProduto WHERE itemPedido.idPedido = ?";
@@ -228,6 +333,17 @@ public class TelaPedido extends javax.swing.JInternalFrame {
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
         }
+    }
+
+    private void setarCamposItemPedido() {
+        int setar = tblItemPedido.getSelectedRow();
+        txtItemPedido.setText(tblItemPedido.getModel().getValueAt(setar, 0).toString());
+        txtPedidoId.setText(tblItemPedido.getModel().getValueAt(setar, 1).toString());
+        txtIdProduto.setText(tblItemPedido.getModel().getValueAt(setar, 2).toString());
+        txtNomeProduto.setText(tblItemPedido.getModel().getValueAt(setar, 3).toString());
+        cboTamanho.setSelectedItem(tblItemPedido.getModel().getValueAt(setar, 4).toString());
+        txtQtd.setText(tblItemPedido.getModel().getValueAt(setar, 5).toString());
+        txtPrecoUni.setText(tblItemPedido.getModel().getValueAt(setar, 6).toString());
     }
 
     //método para atualizar estoque assim que um produto por inserido ao pedido
@@ -312,10 +428,10 @@ public class TelaPedido extends javax.swing.JInternalFrame {
         jLabel22 = new javax.swing.JLabel();
         jButton7 = new javax.swing.JButton();
         jLabel20 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        txtItemPedido = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        btnAlterarPedido = new javax.swing.JButton();
+        btnExcluirPedido = new javax.swing.JButton();
 
         jTable4.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -613,8 +729,18 @@ public class TelaPedido extends javax.swing.JInternalFrame {
         });
 
         jButton5.setText("Alterar");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
 
         jButton6.setText("Excluir");
+        jButton6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton6ActionPerformed(evt);
+            }
+        });
 
         tblItemPedido.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -627,6 +753,11 @@ public class TelaPedido extends javax.swing.JInternalFrame {
                 "idItemProduto", "idPedido", "idProduto", "Nome", "Tamanho", "Quantidade", "PreçoUnitário", "Preçototal"
             }
         ));
+        tblItemPedido.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblItemPedidoMouseClicked(evt);
+            }
+        });
         jScrollPane5.setViewportView(tblItemPedido);
 
         jLabel22.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
@@ -638,7 +769,7 @@ public class TelaPedido extends javax.swing.JInternalFrame {
 
         jLabel20.setText("id Item Pedido");
 
-        jTextField1.setEnabled(false);
+        txtItemPedido.setEnabled(false);
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -681,7 +812,7 @@ public class TelaPedido extends javax.swing.JInternalFrame {
                         .addGap(18, 18, 18)
                         .addComponent(jLabel20)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(txtItemPedido, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
@@ -711,7 +842,7 @@ public class TelaPedido extends javax.swing.JInternalFrame {
                             .addComponent(jLabel21)
                             .addComponent(txtPedidoId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel20)
-                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(txtItemPedido, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addGap(11, 11, 11)
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -761,9 +892,19 @@ public class TelaPedido extends javax.swing.JInternalFrame {
             }
         });
 
-        jButton2.setText("Alterar");
+        btnAlterarPedido.setText("Alterar");
+        btnAlterarPedido.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAlterarPedidoActionPerformed(evt);
+            }
+        });
 
-        jButton3.setText("Excluir");
+        btnExcluirPedido.setText("Excluir");
+        btnExcluirPedido.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnExcluirPedidoActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -806,9 +947,9 @@ public class TelaPedido extends javax.swing.JInternalFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jButton1)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButton2)
+                                .addComponent(btnAlterarPedido)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButton3)))
+                                .addComponent(btnExcluirPedido)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -853,8 +994,8 @@ public class TelaPedido extends javax.swing.JInternalFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jButton1)
-                            .addComponent(jButton2)
-                            .addComponent(jButton3)))
+                            .addComponent(btnAlterarPedido)
+                            .addComponent(btnExcluirPedido)))
                     .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -913,15 +1054,40 @@ public class TelaPedido extends javax.swing.JInternalFrame {
         pesquisarPedido();
     }//GEN-LAST:event_txtPesqPedidoKeyReleased
 
+    private void btnAlterarPedidoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAlterarPedidoActionPerformed
+        // método para alterar os dados do pedido
+        alterarPedido();
+    }//GEN-LAST:event_btnAlterarPedidoActionPerformed
+
+    private void btnExcluirPedidoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExcluirPedidoActionPerformed
+        // método para excluir pedido
+        excluirPedido();
+    }//GEN-LAST:event_btnExcluirPedidoActionPerformed
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        // método para alterar os dados do item do pedido
+        alterarItemPedido();
+    }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void tblItemPedidoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblItemPedidoMouseClicked
+        // método para setar os campos da tabela item pedido com o formulário
+        setarCamposItemPedido();
+    }//GEN-LAST:event_tblItemPedidoMouseClicked
+
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+        // método para excluir um item do pedido
+        excluirItemPedido();
+    }//GEN-LAST:event_jButton6ActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnAlterarPedido;
+    private javax.swing.JButton btnExcluirPedido;
     private javax.swing.JComboBox<String> cboPagamento;
     private javax.swing.JComboBox<String> cboStatus;
     private javax.swing.JComboBox<String> cboTamanho;
     private javax.swing.JComboBox<String> cboTipoPedido;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
@@ -958,7 +1124,6 @@ public class TelaPedido extends javax.swing.JInternalFrame {
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JTable jTable4;
-    private javax.swing.JTextField jTextField1;
     private javax.swing.JTable tblClientes;
     private javax.swing.JTable tblItemPedido;
     private javax.swing.JTable tblPesqPedido;
@@ -969,6 +1134,7 @@ public class TelaPedido extends javax.swing.JInternalFrame {
     private javax.swing.JTextField txtIdPedido;
     private javax.swing.JTextField txtIdProduto;
     private javax.swing.JTextField txtIdUsuario;
+    private javax.swing.JTextField txtItemPedido;
     private javax.swing.JTextField txtNomeProduto;
     private javax.swing.JTextField txtNomeUsuario;
     private javax.swing.JTextField txtObs;
