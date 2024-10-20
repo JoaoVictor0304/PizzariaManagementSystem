@@ -300,6 +300,7 @@ public class TelaPedido extends javax.swing.JInternalFrame {
                 int apagado = pst.executeUpdate();
                 if (apagado > 0) {
                     JOptionPane.showMessageDialog(null, "Item excluído do pedido");
+                    retornaEstoque();
                     txtIdProduto.setText("");
                     txtItemPedido.setText("");
                     txtNomeProduto.setText("");
@@ -344,6 +345,21 @@ public class TelaPedido extends javax.swing.JInternalFrame {
         cboTamanho.setSelectedItem(tblItemPedido.getModel().getValueAt(setar, 4).toString());
         txtQtd.setText(tblItemPedido.getModel().getValueAt(setar, 5).toString());
         txtPrecoUni.setText(tblItemPedido.getModel().getValueAt(setar, 6).toString());
+    }
+
+    //método para retornar ao estoque um item que foi excluído do pedido
+    private void retornaEstoque() {
+        String sql = "UPDATE estoque e JOIN tbprodutoingrediente pi ON e.idIngrediente = pi.idIngrediente SET e.quantidade = e.quantidade + (pi.quantidade * ?) WHERE pi.idProduto = ?";
+        try {
+            pst = conexao.prepareStatement(sql);
+            pst.setString(1, txtQtd.getText());
+            pst.setString(2, txtIdProduto.getText());
+
+            pst.executeUpdate();
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
     }
 
     //método para atualizar estoque assim que um produto por inserido ao pedido
