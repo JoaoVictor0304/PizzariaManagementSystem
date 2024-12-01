@@ -4,12 +4,22 @@
  */
 package telas;
 
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.sql.*;
 import conexaodatabase.ModuloConexao;
+import java.awt.Desktop;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.text.DateFormat;
 import java.time.LocalDateTime;
 import javax.swing.JOptionPane;
+import java.util.Date;
 
 /**
  *
@@ -25,6 +35,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
      */
     Connection conexao = null;
     PreparedStatement pst = null;
+    ResultSet rs = null;
 
     public TelaPrincipal(String usu, String perfil) {
         initComponents();
@@ -47,6 +58,79 @@ public class TelaPrincipal extends javax.swing.JFrame {
             System.out.println(e);
         }
 
+    }
+
+    private void gerarPdf() {
+        Document document = new Document();
+
+        //gerar o documento pdf
+        try {
+            PdfWriter.getInstance(document, new FileOutputStream("Relatorio.pdf"));
+            document.open();
+            Date data = new Date();
+            DateFormat formatador = DateFormat.getDateInstance(DateFormat.FULL);
+            document.add(new Paragraph(formatador.format(data)));
+            document.add(new Paragraph("Relátorio de vendas, últimos 30 dias"));
+            document.add(new Paragraph(" "));
+            // tabela
+            PdfPTable tabela = new PdfPTable(6);
+            PdfPCell col1 = new PdfPCell(new Paragraph("ID PEDIDO"));
+            tabela.addCell(col1);
+            PdfPCell col2 = new PdfPCell(new Paragraph("DATA"));
+            tabela.addCell(col2);
+            PdfPCell col3 = new PdfPCell(new Paragraph("PRODUTO"));
+            tabela.addCell(col3);
+            PdfPCell col4 = new PdfPCell(new Paragraph("QUANTIDADE"));
+            tabela.addCell(col4);
+            PdfPCell col5 = new PdfPCell(new Paragraph("PRE UNITÁRIO"));
+            tabela.addCell(col5);
+            PdfPCell col6 = new PdfPCell(new Paragraph("PRE TOTAL"));
+            tabela.addCell(col6);
+            String readLista = "SELECT \n"
+                    + "    tbpedido.idPedido,\n"
+                    + "    tbpedido.datapedido,\n"
+                    + "    tbproduto.nome,\n"
+                    + "    itempedido.quantidade,\n"
+                    + "    itempedido.precoUnitario,\n"
+                    + "    itempedido.valorTotal\n"
+                    + "FROM \n"
+                    + "    tbpedido\n"
+                    + "INNER JOIN \n"
+                    + "    itempedido ON tbpedido.idPedido = itempedido.idPedido\n"
+                    + "INNER JOIN \n"
+                    + "    tbproduto ON itempedido.idProduto = tbproduto.idProduto\n"
+                    + "WHERE \n"
+                    + "    tbpedido.datapedido >= NOW() - INTERVAL 30 DAY;";
+            
+            try {
+                conexao = ModuloConexao.connector();
+                pst = conexao.prepareStatement(readLista);
+                rs = pst.executeQuery();
+                while(rs.next()){
+                    tabela.addCell(rs.getString(1));
+                    tabela.addCell(rs.getString(2));
+                    tabela.addCell(rs.getString(3));
+                    tabela.addCell(rs.getString(4));
+                    tabela.addCell(rs.getString(5));
+                    tabela.addCell(rs.getString(6));
+                }
+            } catch (Exception ex) {
+                System.out.println(ex);
+            }
+            
+            document.add(tabela);
+        } catch (Exception e) {
+            System.out.println(e);
+        } finally {
+            document.close();
+        }
+
+        //abrir o documento pdf no leitor padrão do sistema
+        try {
+            Desktop.getDesktop().open(new File("Relatorio.pdf"));
+        } catch (Exception e2) {
+            System.out.println(e2);
+        }
     }
 
     /**
@@ -77,6 +161,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         jMenu5 = new javax.swing.JMenu();
         menuAjuda = new javax.swing.JMenuItem();
         jMenu6 = new javax.swing.JMenu();
+        menuRelatorio = new javax.swing.JMenuItem();
         menuTrocUsuario = new javax.swing.JMenuItem();
         menuSair = new javax.swing.JMenuItem();
 
@@ -212,6 +297,14 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
         jMenu6.setText("Opções");
 
+        menuRelatorio.setText("Relatório");
+        menuRelatorio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuRelatorioActionPerformed(evt);
+            }
+        });
+        jMenu6.add(menuRelatorio);
+
         menuTrocUsuario.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_U, java.awt.event.InputEvent.ALT_DOWN_MASK));
         menuTrocUsuario.setText("Trocar usuário");
         menuTrocUsuario.addActionListener(new java.awt.event.ActionListener() {
@@ -316,7 +409,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
     }//GEN-LAST:event_menuEstoqueActionPerformed
 
     private void menuTrocUsuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuTrocUsuarioActionPerformed
-        Login newlogin = new Login();        
+        Login newlogin = new Login();
         this.dispose();
         newlogin.setVisible(true);
     }//GEN-LAST:event_menuTrocUsuarioActionPerformed
@@ -333,6 +426,11 @@ public class TelaPrincipal extends javax.swing.JFrame {
         desktop.add(pedido);
         pedido.setVisible(true);
     }//GEN-LAST:event_jMenuItem1ActionPerformed
+
+    private void menuRelatorioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuRelatorioActionPerformed
+        // emite um relátorio dos últimos 30 dias
+        gerarPdf();
+    }//GEN-LAST:event_menuRelatorioActionPerformed
 
     /**
      * @param args the command line arguments
@@ -356,6 +454,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
     public static javax.swing.JMenuItem menuCriarPizza;
     public static javax.swing.JMenuItem menuEstoque;
     private javax.swing.JMenu menuReceitas;
+    private javax.swing.JMenuItem menuRelatorio;
     private javax.swing.JMenuItem menuSair;
     private javax.swing.JMenuItem menuTrocUsuario;
     public static javax.swing.JMenuItem menuUser;
