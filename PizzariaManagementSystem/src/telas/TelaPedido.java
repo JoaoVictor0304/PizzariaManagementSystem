@@ -4,8 +4,17 @@
  */
 package telas;
 
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 import java.sql.*;
 import conexaodatabase.ModuloConexao;
+import java.awt.Desktop;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.text.DateFormat;
 import javax.swing.JOptionPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -377,6 +386,138 @@ public class TelaPedido extends javax.swing.JInternalFrame {
         }
     }
 
+    private void imprimirPedido() {
+        Document document = new Document();
+
+        //gerar o documento pdf
+        try {
+            PdfWriter.getInstance(document, new FileOutputStream("Pedido.pdf"));
+            document.open();
+            document.add(new Paragraph("Pedido"));
+            document.add(new Paragraph(" "));
+            //tabela dados
+            PdfPTable tabela = new PdfPTable(6);
+            PdfPCell col1 = new PdfPCell(new Paragraph("ID PEDIDO"));
+            tabela.addCell(col1);
+            PdfPCell col2 = new PdfPCell(new Paragraph("DATA"));
+            tabela.addCell(col2);
+            PdfPCell col3 = new PdfPCell(new Paragraph("ID CLI"));
+            tabela.addCell(col3);
+            PdfPCell col4 = new PdfPCell(new Paragraph("NOME"));
+            tabela.addCell(col4);
+            PdfPCell col5 = new PdfPCell(new Paragraph("TIPO"));
+            tabela.addCell(col5);
+            PdfPCell col6 = new PdfPCell(new Paragraph("PAG"));
+            tabela.addCell(col6);
+
+            //tabela pedido
+            PdfPTable tabelaPedido = new PdfPTable(6);
+            PdfPCell coll1 = new PdfPCell(new Paragraph("ID"));
+            tabelaPedido.addCell(coll1);
+            PdfPCell colL2 = new PdfPCell(new Paragraph("QUANTIDADE"));
+            tabelaPedido.addCell(colL2);
+            PdfPCell coll3 = new PdfPCell(new Paragraph("NOME"));
+            tabelaPedido.addCell(coll3);
+            PdfPCell coll4 = new PdfPCell(new Paragraph("TAMANHO"));
+            tabelaPedido.addCell(coll4);
+            PdfPCell coll5 = new PdfPCell(new Paragraph("PRE UNI"));
+            tabelaPedido.addCell(coll5);
+            PdfPCell coll6 = new PdfPCell(new Paragraph("PRE TOTAL"));
+            tabelaPedido.addCell(coll6);
+
+            double somaValores = 0.0; //variável para armazenar a soma dos valores
+
+            String readLista = "SELECT \n"
+                    + "    tbpedido.idPedido,\n"
+                    + "    tbpedido.datapedido,\n"
+                    + "    tbpedido.idcliente,\n"
+                    + "    cliente.nomecli,\n"
+                    + "    tbpedido.tipoPedido,\n"
+                    + "    tbpedido.metodoPagamento,\n"
+                    + "    itempedido.quantidade,\n"
+                    + "    itempedido.idProduto,\n"
+                    + "    tbproduto.nome AS nomeProduto,\n"
+                    + "    itempedido.tamanho,\n"
+                    + "    itempedido.precoUnitario,\n"
+                    + "    itempedido.valorTotal\n"
+                    + "FROM \n"
+                    + "    tbpedido\n"
+                    + "INNER JOIN \n"
+                    + "    cliente ON tbpedido.idcliente = cliente.idcliente\n"
+                    + "INNER JOIN \n"
+                    + "    itempedido ON tbpedido.idPedido = itempedido.idPedido\n"
+                    + "INNER JOIN \n"
+                    + "    tbproduto ON itempedido.idProduto = tbproduto.idProduto\n"
+                    + "WHERE \n"
+                    + "    tbpedido.idPedido = (\n"
+                    + "        SELECT \n"
+                    + "            MAX(idPedido)\n"
+                    + "        FROM \n"
+                    + "            tbpedido\n"
+                    + "    );";
+
+            try {
+                conexao = ModuloConexao.connector();
+                pst = conexao.prepareStatement(readLista);
+                rs = pst.executeQuery();
+
+                boolean pedidoAdicionado = false; // Controla se os dados do pedido já foram adicionados
+
+                while (rs.next()) {
+                    if (!pedidoAdicionado) {
+                        //adicionar dados do pedido e cliente uma vez
+                        tabela.addCell(rs.getString(1));
+                        tabela.addCell(rs.getString(2));
+                        tabela.addCell(rs.getString(3));
+                        tabela.addCell(rs.getString(4));
+                        tabela.addCell(rs.getString(5));
+                        tabela.addCell(rs.getString(6));
+                        pedidoAdicionado = true; // Marcar como adicionado
+                    }
+
+                    //adicionar itens do pedido
+                    tabelaPedido.addCell(rs.getString(8));
+                    tabelaPedido.addCell(rs.getString(7));
+                    tabelaPedido.addCell(rs.getString(9));
+                    tabelaPedido.addCell(rs.getString(10));
+                    tabelaPedido.addCell(rs.getString(11));
+                    tabelaPedido.addCell(rs.getString(12));
+
+                    //soma os valores totais (coluna 12)
+                    somaValores += rs.getDouble(12);
+                }
+            } catch (Exception ex) {
+                System.out.println(ex);
+            }
+            document.add(tabela);
+            document.add(new Paragraph(" "));
+            document.add(new Paragraph("Itens do Pedido:"));
+            document.add(new Paragraph(" "));
+            document.add(tabelaPedido);
+            document.add(new Paragraph(" "));
+            
+            //tabela com o total do pedido
+            PdfPTable resumoTabela = new PdfPTable(2);
+            resumoTabela.addCell(new PdfPCell(new Paragraph("TOTAL DO PEDIDO")));
+            resumoTabela.addCell(new PdfPCell(new Paragraph(String.format("R$ %.2f", somaValores))));
+
+            document.add(resumoTabela);
+
+        } catch (Exception e) {
+            System.out.println(e);
+        } finally {
+            document.close();
+        }
+
+        //abrir o documento pdf no leitor padrão do sistema
+        try {
+            Desktop.getDesktop().open(new File("Pedido.pdf"));
+        } catch (Exception e2) {
+            System.out.println(e2);
+        }
+
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -442,7 +583,7 @@ public class TelaPedido extends javax.swing.JInternalFrame {
         jScrollPane5 = new javax.swing.JScrollPane();
         tblItemPedido = new javax.swing.JTable();
         jLabel22 = new javax.swing.JLabel();
-        jButton7 = new javax.swing.JButton();
+        btnImprimir = new javax.swing.JButton();
         jLabel20 = new javax.swing.JLabel();
         txtItemPedido = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
@@ -780,8 +921,13 @@ public class TelaPedido extends javax.swing.JInternalFrame {
         jLabel22.setText("Itens do pedido");
         jLabel22.setToolTipText("");
 
-        jButton7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icones/printer.png"))); // NOI18N
-        jButton7.setToolTipText("Imprimir pedido");
+        btnImprimir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icones/printer.png"))); // NOI18N
+        btnImprimir.setToolTipText("Imprimir pedido");
+        btnImprimir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnImprimirActionPerformed(evt);
+            }
+        });
 
         jLabel20.setText("id Item Pedido");
 
@@ -819,7 +965,7 @@ public class TelaPedido extends javax.swing.JInternalFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton6)
                         .addGap(18, 18, 18)
-                        .addComponent(jButton7))
+                        .addComponent(btnImprimir))
                     .addComponent(jLabel13)
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addComponent(jLabel21)
@@ -897,7 +1043,7 @@ public class TelaPedido extends javax.swing.JInternalFrame {
                                     .addComponent(jButton4)
                                     .addComponent(jButton5)
                                     .addComponent(jButton6)))
-                            .addComponent(jButton7))))
+                            .addComponent(btnImprimir))))
                 .addContainerGap(41, Short.MAX_VALUE))
         );
 
@@ -1095,10 +1241,16 @@ public class TelaPedido extends javax.swing.JInternalFrame {
         excluirItemPedido();
     }//GEN-LAST:event_jButton6ActionPerformed
 
+    private void btnImprimirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnImprimirActionPerformed
+        // método para imprimir o pedido em pdf
+        imprimirPedido();
+    }//GEN-LAST:event_btnImprimirActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAlterarPedido;
     private javax.swing.JButton btnExcluirPedido;
+    private javax.swing.JButton btnImprimir;
     private javax.swing.JComboBox<String> cboPagamento;
     private javax.swing.JComboBox<String> cboStatus;
     private javax.swing.JComboBox<String> cboTamanho;
@@ -1107,7 +1259,6 @@ public class TelaPedido extends javax.swing.JInternalFrame {
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
-    private javax.swing.JButton jButton7;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;

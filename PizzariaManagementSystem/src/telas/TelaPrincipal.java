@@ -86,6 +86,9 @@ public class TelaPrincipal extends javax.swing.JFrame {
             tabela.addCell(col5);
             PdfPCell col6 = new PdfPCell(new Paragraph("PRE TOTAL"));
             tabela.addCell(col6);
+
+            double somaValores = 0.0; //variável para armazenar a soma dos valores
+
             String readLista = "SELECT \n"
                     + "    tbpedido.idPedido,\n"
                     + "    tbpedido.datapedido,\n"
@@ -101,24 +104,33 @@ public class TelaPrincipal extends javax.swing.JFrame {
                     + "    tbproduto ON itempedido.idProduto = tbproduto.idProduto\n"
                     + "WHERE \n"
                     + "    tbpedido.datapedido >= NOW() - INTERVAL 30 DAY;";
-            
+
             try {
                 conexao = ModuloConexao.connector();
                 pst = conexao.prepareStatement(readLista);
                 rs = pst.executeQuery();
-                while(rs.next()){
+                while (rs.next()) {
                     tabela.addCell(rs.getString(1));
                     tabela.addCell(rs.getString(2));
                     tabela.addCell(rs.getString(3));
                     tabela.addCell(rs.getString(4));
                     tabela.addCell(rs.getString(5));
                     tabela.addCell(rs.getString(6));
+                    //soma os valores totais (coluna 6)
+                    somaValores += rs.getDouble(6);
                 }
             } catch (Exception ex) {
                 System.out.println(ex);
             }
-            
             document.add(tabela);
+
+            //segunda tabela: Resumo com o total de vendas
+            PdfPTable resumoTabela = new PdfPTable(2);
+            resumoTabela.addCell(new PdfPCell(new Paragraph("VALOR TOTAL DE VENDAS")));
+            resumoTabela.addCell(new PdfPCell(new Paragraph(String.format("R$ %.2f", somaValores))));
+
+            document.add(resumoTabela);
+
         } catch (Exception e) {
             System.out.println(e);
         } finally {
